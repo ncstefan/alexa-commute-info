@@ -1,0 +1,44 @@
+LaunchRequest
+==============
+ A  - Hello there! Have we meet before?
+    - yesIntent (previousState=acquintance)
+A       - Sorry, I did not recognize you. For who would you like the commute duration? 
+        - trafficIntent (previousState=nameRecognized)
+    - noIntent (previousState=acquintance)
+A       - Always happy to help new people withe the commute duration and directions. What's your name?        
+            - nameIntent (previousState=nameNotRecognized)
+                My name is: 
+                I'm:
+A           - Nice to meet you <name>. Did I pronounce your name properly?
+                - yesIntent (previousState=nameInput)
+                - noIntent (previousState=nameInput)
+
+A           - Great, now I'd need to know what your home address is?
+            - addressIntent (previousState=nameAccepted)
+        A   - Great, you live at: <address>. Correct?
+                - yesIntent (previousState=addressInput)
+            A       - <name>, what is the destination address of your usual commute?
+                    - addressIntent (previousState=homeAddressAccepted)
+            A   - Ok, your commuting to <address>, correct?
+                - yesIntent (previousState=commuteAddress)      
+
+
+- Hi, there. Nice meeting you. You need to register your routes first. You will need your User ID to complete the registration. 
+Your user id is: ....... 
+    
+
+Ask User ID
+=============
+"Alexa, ask Commute Info my {user|user id}".
+    A - Your user id is: ..... Would you like me to repeat? 
+        - yesIntent  | repeatIntent
+            - Your user id is: .......  
+        - noIntent
+Ask Reset Routes
+=================
+- the registation page only allows a first time registration for a given user ID. You need to reset your routes before. 
+"Alexa, ask Commute Info to {delete|reset} {configuration|routes|}".
+
+
+
+Error loading app [/Users/nicks/Desktop/nodejs/node_modules/alexa-app-server/examples/apps/commute_info/index.js]: AssertionError: missing path

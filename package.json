@@ -1,0 +1,15 @@
+{
+  "name": "commute_info",
+  "version": "1.0.0",
+  "description": "Alexa skill for traffic time and directions",
+  "main": "index.js",
+  "author": "Dany Stefan",
+  "license": "ISC",
+  "alexa": {
+    "applicationId": "amzn1.echo-sdk-ams.app.999999-d0ed-9999-ad00-999999d00ebe"
+  },
+  "dependencies": {
+    "@google/maps": "^0.3.1",
+    "alexa-app": "^2.3.4"
+  }
+}
