@@ -42,3 +42,4 @@ Ask Reset Routes
 
 
 Error loading app [/Users/nicks/Desktop/nodejs/node_modules/alexa-app-server/examples/apps/commute_info/index.js]: AssertionError: missing path
+
