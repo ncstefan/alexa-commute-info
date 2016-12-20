@@ -5,6 +5,11 @@ exports.nameIntentHandler = function(req,res){
 
 console.log("NameIntent()");
 
+    if(!req.session("previousState")){
+        res.shouldEndSession(false);
+        return true;
+    }
+    
     switch(req.sessionAttributes.previousState){
 
         // Traffic intent did not trigger at start-up

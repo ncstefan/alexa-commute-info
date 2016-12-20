@@ -5,6 +5,11 @@ exports.addressIntentHandler = function(req,res){
 
 console.log("AddressIntent()");
 
+    if(!req.session("previousState")){
+        res.shouldEndSession(false);
+        return true;
+    }
+    
     switch(req.sessionAttributes.previousState){
 
         // Traffic intent did not trigger at start-up
