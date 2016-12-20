@@ -15,7 +15,12 @@ console.log("NoIntent()");
         // Traffic intent did not trigger at start-up
         case "acquaintance": 
             res.session("previousState", "nameNotRecognized");
-            var prompt = "Always happy to help new people with their commute duration and directions. What is your name? Say: my name is.";
+            res.card({
+                type: "Standard",
+                title: "Here is your userID", // this is not required for type Simple
+                text: "Copy this:\n " + req.userId + "\nVisit the registration portal here:\nhttp://alexacommuteinforeg.us-east-1.elasticbeanstalk.com\nFollow these steps:\n1. Copy and paste your userID into the portal to have access to our services\n2. Provide the names of people in your household along with their origin address and destination address"
+            });
+            var prompt = "Welcome, you will have to register through the portal. Check your alexa app, you will be provided with some steps to follow";
             res.say(prompt).shouldEndSession(false);
             break;
 
