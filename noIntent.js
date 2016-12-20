@@ -15,6 +15,8 @@ console.log("NoIntent()");
         // Traffic intent did not trigger at start-up
         case "acquaintance": 
             res.session("previousState", "nameNotRecognized");
+            callback(session.attributes,
+                    buildSpeechletResponse("Here is your userID", "###1234", "You should get a card", "", false));
             var prompt = "Always happy to help new people with their commute duration and directions. What is your name? Say: my name is.";
             res.say(prompt).shouldEndSession(false);
             break;
@@ -44,3 +46,24 @@ console.log("NoIntent()");
     }
     return true;
 };
+
+function buildSpeechletResponse(title, cardOutput, speechOutput, repromptText, shouldEndSession) {    //card
+    return {
+        outputSpeech: {
+            type: "PlainText",
+            text: speechOutput
+        },
+        card: {
+            type: "Simple",
+            title: title,
+            content: cardOutput
+        },
+        reprompt: {
+            outputSpeech: {
+                type: "PlainText",
+                text: repromptText
+            }
+        },
+        shouldEndSession: shouldEndSession
+    };
+}

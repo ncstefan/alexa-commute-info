@@ -460,7 +460,7 @@ function handleRequestError(intent, session, callback) {
 
 // ------- Helper functions to build responses -------
 
-function buildSpeechletResponse(title, output, repromptText, shouldEndSession) {
+function buildSpeechletResponse(title, output, repromptText, shouldEndSession) {    //card
     return {
         outputSpeech: {
             type: "PlainText",
