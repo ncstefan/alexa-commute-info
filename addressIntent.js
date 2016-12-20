@@ -6,6 +6,7 @@ exports.addressIntentHandler = function(req,res){
 console.log("AddressIntent()");
 
     if(!req.session("previousState")){
+        console.log("AddressIntent() - no state found");
         res.shouldEndSession(false);
         return true;
     }

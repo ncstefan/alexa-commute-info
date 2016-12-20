@@ -6,7 +6,10 @@ exports.yesIntentHandler = function(req,res){
 console.log("YesIntent()");
 
     if(!req.session("previousState")){
-        res.shouldEndSession(false);
+        console.log("YesIntent() - no state found");        
+        res.session("previousState", "nameNotRecognized");
+        var prompt = "Sorry, I did not recognize you. For who would you like to know the commute duration?";
+        res.say(prompt).shouldEndSession(false); 
         return true;
     }
 
