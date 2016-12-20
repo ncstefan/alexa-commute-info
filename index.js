@@ -25,7 +25,7 @@ app.launch(launchRequest.launchRequestHandler);
 app.intent(
     'TrafficIntent', 
     {
-        "slots": {"Destinations": "LIST_OF_NAMES","Options": "LIST_OF_OPTIONS"},
+        "slots": {"Destinations": "AMAZON.Person","Options": "LIST_OF_OPTIONS"},
         "utterances": [
             "{time|} for {-|Destinations} by {-|Options}", 
             "{time|} for {-|Destinations}",
