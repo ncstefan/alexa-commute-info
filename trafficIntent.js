@@ -2,13 +2,13 @@
 var commute_info = require('./commute_info');
 
 // TrafficIntent
-exports.trafficIntentHandler = function(req,res){
+exports.trafficIntentHandler = function(req,res){   // should have a state (nameRecognized)
 
-console.log("TrafficIntent() for: " + req.slot('Destinations') + " by " + req.slot('Options'));
+console.log("TrafficIntent() for: " + req.slot('Destinations') + " by " + req.slot('Options')); //@@@ destinations is on fact taken from the list of names
 
         //get the name 
         var name = req.slot('Destinations');
-    
+        console.log("Traffic intent for name: " + name);
         //get the car|bus option
         var opt = req.slot('Options');
         if( !opt ) opt = "car";
