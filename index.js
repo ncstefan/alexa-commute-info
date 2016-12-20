@@ -59,6 +59,7 @@ app.intent(
     addresIntent.addressIntentHandler
 );
 
+/*
 // UserIDIntent
 app.intent(
     'UserIDIntent', 
@@ -70,7 +71,7 @@ app.intent(
     },
     useridIntent.useridIntentHandler
 );
-
+*/
 
 // YesIntent
 app.intent(
