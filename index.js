@@ -11,7 +11,7 @@ var useridIntent = require('./useridIntent');
 module.change_code = 1;
 
 // Define an alexa-app
-app = new alexa.app('commute');
+app = new alexa.app('commute'); //@@@ ? parameter
 app.dictionary = {
     "names": ["nick", "coco", "danny"],
     "orig": ["1585+Richelieu+Brossard+Quebec", "1585+Richelieu+Brossard+Quebec", "1585+Richelieu+Brossard+Quebec"],

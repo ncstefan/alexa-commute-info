@@ -19,7 +19,7 @@ console.log("Setting Options URI");
     if(opt == 'car')
         options.path = '/maps/api/distancematrix/json?origins=' + orig + '&destinations=' + dest + '&mode=driving&departure_time=now&key=AIzaSyCmZYBGNZw_Tkej-NwnCoEnzTwCy1lr4sg'
     else
-        options.path = '/maps/api/directions/json?origin=' + orig + '&destination=' + dest + '&mode=transit&key=AIzaSyCmZYBGNZw_Tkej-NwnCoEnzTwCy1lr4sg'
+        options.path = '/maps/api/directions/json?origin=' + orig + '&destination=' + dest + '&mode=transit&key=AIzaSyCmZYBGNZw_Tkej-NwnCoEnzTwCy1lr4sg'    //@@@ no mstter what it's by bus
 
     return options;
 }

@@ -16,7 +16,7 @@ console.log("YesIntent()");
         case "acquaintance": 
             res.session("previousState", "nameRecognized");
             var prompt = "Sorry, I did not recognize you. For who would you like to know the commute duration?";
-            res.say(prompt).shouldEndSession(false);
+            res.say(prompt).shouldEndSession(false);    //@@@ call the traffic function with name as parameter
             break;
         
         // New name was introduced
