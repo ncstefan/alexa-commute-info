@@ -1,0 +1,5 @@
+{ 
+  "AWS_REGION": "us-east-1",
+  "STARTUP_SIGNUP_TABLE": "alexacomute_sign_up",
+  "NEW_SIGNUP_TOPIC": "arn:aws:sns:us-east-1:824783492825:Alexa_Signup_Notification"
+}

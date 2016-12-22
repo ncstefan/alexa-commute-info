@@ -7,6 +7,7 @@ var nameIntent = require('./nameIntent');
 var addresIntent = require('./addressIntent');
 var useridIntent = require('./useridIntent');
 
+
 // Allow this module to be reloaded by hotswap when changed
 module.change_code = 1;
 
