@@ -1,17 +1,17 @@
 'use strict';
 var AWS = require('aws-sdk');
 
-//LaunchRequest handler
+//launchRequest handler
 exports.launchRequestHandler = function(req,res) {
 
 console.log("LaunchRequest()");
 
-    res.session("previousState", "acquaintance")
+    res.session("previousState", "loadingUserInfo")
 
     var db = new AWS.DynamoDB({region: 'us-east-1'});
     
     var params = {
-        TableName : "alexacommute_sign_up" /*+ "ABC"*/,    //changing the table name returns an error, changing the alxID does not return error, however data.Item.alexaLocation.S is undefined
+        TableName : "alexacommute_sign_up" /*+ "ABC"*/,
         Key : {
             alxID : {
                 'S' : "amzn1.ask.account.AEZZJ3JVFHBTCTX7OREACSPKWXHUL4OI4ST2KOV2PGXZAO6ZOJNT6L46CD7MXYVKTSHDQ7YT2HHWPM7MX4TU2ATEMR5CBQQWQ25ETTMOD2UQCEMOX3IYA7HEEFSRG5L3JJN4B46DS4WPF2RDH2XEFT7V7E6GARFAHJIII7RUY6NF62VPFKFZYS6XSH3EE37RLCM53J7UX4XYULA"
@@ -22,7 +22,7 @@ console.log("LaunchRequest()");
 
     db.getItem(params, function(err, data) {
         if (err) {
-            console.log("Error getting item from DB:" + err);
+            console.log("Error getting item from DB: " + err);
             console.log("Data: " + data)
             var prompt = "We haven't met before. Please register your userID in the registration portal.";
             res.say(prompt).shouldEndSession(false);
@@ -32,14 +32,15 @@ console.log("LaunchRequest()");
             res.card({
                 type: "Standard",
                 title: "Here is your userID", // this is not required for type Simple
-                text: "Copy this:\n" + req.userId + "\nVisit the registration portal here:\nhttp://alexacommuteinforeg.us-east-1.elasticbeanstalk.com\nFollow these steps:\n1. Copy and paste your userID into the portal to have access to our services\n2. Provide the names of people in your household along with their origin address and destination address\n3. Now you can start using our services"
+                text: "Copy this:\n" + req.userId + "\nVisit the registration portal here:\n" + "http://alexacommuteinforeg.us-east-1.elasticbeanstalk.com" + "\nFollow these steps:\n1. Copy and paste your userID into the portal to have access to our services\n2. Provide the names of everyone in your household along with their home address and their destination address\n3. Now you can start using our services"
             });
-            var prompt = "Welcome, check your alexa app, you will be provided with some steps to follow.";
+            var prompt = "Welcome, check your alexa app, you will be provided with a card and some steps to follow.";
             res.say(prompt).shouldEndSession(true);
             res.send();
         }
         else if (data.Item == undefined) {
-            console.log("Error getting item from DB (got table, but data is empty):" + err);
+            console.log("Error getting item from DB: " + err);
+            console.log("Data: " + data)
             var prompt = "We haven't met before. Please register your userID in the registration portal.";
             res.say(prompt).shouldEndSession(false);
             res.send();
@@ -48,16 +49,16 @@ console.log("LaunchRequest()");
             res.card({
                 type: "Standard",
                 title: "Here is your userID", // this is not required for type Simple
-                text: "Copy this:\n" + req.userId + "\nVisit the registration portal here:\nhttp://alexacommuteinforeg.us-east-1.elasticbeanstalk.com\nFollow these steps:\n1. Copy and paste your userID into the portal to have access to our services\n2. Provide the names of people in your household along with their origin address and destination address\n3. Now you can start using our services"
+                text: "Copy this:\n" + req.userId + "\nVisit the registration portal here:\n" + "http://alexacommuteinforeg.us-east-1.elasticbeanstalk.com" + "\nFollow these steps:\n1. Copy and paste your userID into the portal to have access to our services\n2. Provide the names of everyone in your household along with their home address and their destination address\n3. Now you can start using our services"
             });
-            var prompt = "Welcome, check your alexa app, you will be provided with some steps to follow.";
+            var prompt = "Welcome, check your alexa app, you will be provided with a card and some steps to follow.";
             res.say(prompt).shouldEndSession(true);
             res.send();
         }
-        else {  //change (add another if statement -> check that data is not undefined, that the alxID matches)
-            console.log("Found table");
+        else { 
+            console.log("Found table in DB");
             console.log("Found userID in DB: "+ JSON.stringify(data));
-            //console.log("Found userID in DB: "+ JSON.stringify(data));
+            
             var prompt = "Hello, I found your registration record. This is your address: " + data.Item.alexaLocation.S + ".";   //make it a question (y/n)
             res.say(prompt).shouldEndSession(false);
             res.send();
@@ -67,7 +68,7 @@ console.log("LaunchRequest()");
             console.log(app.dictionary.names.indexOf(data.Item.name1.S));
             console.log(app.dictionary.names[0]);
 
-            //populate dictionary with origin address
+            //populate dictionary with home address
             app.dictionary.orig.push(data.Item.alexaLocation.S);
             console.log(app.dictionary.orig.indexOf(data.Item.alexaLocation.S));
             console.log(app.dictionary.orig[0]);
