@@ -11,12 +11,19 @@ function setMapAPIOptions(name, opt){
         method: 'GET'
     };
 
-console.log("Setting Options URI");
+    console.log("Setting Options URI");
+    console.log(app.dictionary.names[0]);
+    console.log(app.dictionary.orig[0]);
+    console.log(app.dictionary.dest[0]);
+
 
     // Set route URI for <name> depending on transportation option
-    var orig = app.dictionary.orig[app.dictionary.names.indexOf(name)];
-    var dest = app.dictionary.dest[app.dictionary.names.indexOf(name)];
-    if(opt == 'car')
+    var orig = app.dictionary.orig[app.dictionary.names.indexOf(name)].replace(/ /g, "+");
+    var dest = app.dictionary.dest[app.dictionary.names.indexOf(name)].replace(/ /g, "+");
+    console.log(orig);
+    console.log(dest);
+    
+    if (opt == 'car')
         options.path = '/maps/api/distancematrix/json?origins=' + orig + '&destinations=' + dest + '&mode=driving&departure_time=now&key=AIzaSyCmZYBGNZw_Tkej-NwnCoEnzTwCy1lr4sg'
     else
         options.path = '/maps/api/directions/json?origin=' + orig + '&destination=' + dest + '&mode=transit&key=AIzaSyCmZYBGNZw_Tkej-NwnCoEnzTwCy1lr4sg'    //@@@ no mstter what it's by bus

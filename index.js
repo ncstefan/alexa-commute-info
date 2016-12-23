@@ -12,11 +12,11 @@ var useridIntent = require('./useridIntent');
 module.change_code = 1;
 
 // Define an alexa-app
-app = new alexa.app('commute'); //@@@ ? parameter
+app = new alexa.app('commute');
 app.dictionary = {
-    "names": ["nick", "coco", "danny"],
-    "orig": ["1585+Richelieu+Brossard+Quebec", "1585+Richelieu+Brossard+Quebec", "1585+Richelieu+Brossard+Quebec"],
-    "dest": ["180+Peel+Montreal+Quebec","1000+Marie-Victorin+Longueuil","900+Riverside+Saint-Lambert"]
+    "names": [],    //["nick", "coco", "danny"],
+    "orig": [],  //["1585+Richelieu+Brossard+Quebec", "1585+Richelieu+Brossard+Quebec", "1585+Richelieu+Brossard+Quebec"],
+    "dest": []  //["180+Peel+Montreal+Quebec","1000+Marie-Victorin+Longueuil","900+Riverside+Saint-Lambert"]
 }; 
 
 // LaunchRequest
@@ -42,7 +42,10 @@ app.intent(
     {
         "slots": {"Name": "LIST_OF_NAMES"},
         "utterances": [
-            "{the|my|} name is {-|Name}"
+            "{the|my|} name is {-|Name}",
+            "{the|my|} name is {-|Name} by {-|Options}",
+            "name is {-|Name}",
+            "name is {-|Name} by {-|Options}"
         ]
     },
     nameIntent.nameIntentHandler
