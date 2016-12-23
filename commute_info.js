@@ -2,7 +2,7 @@
 var https = require('https');
 //var maps = require('maps');
 
-function setMapAPIOptions(name, opt){
+function setMapAPIOptions(name, opt) {
 
     var options = {
         host: 'maps.googleapis.com',

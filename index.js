@@ -4,7 +4,7 @@ var trafficIntent = require('./trafficIntent');
 var yesIntent = require('./yesIntent');
 var noIntent = require('./noIntent');
 var nameIntent = require('./nameIntent');
-var addresIntent = require('./addressIntent');
+//var addresIntent = require('./addressIntent');
 var useridIntent = require('./useridIntent');
 
 
