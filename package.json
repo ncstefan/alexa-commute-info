@@ -1,7 +1,7 @@
 {
   "name": "commute_info",
   "version": "1.0.0",
-  "description": "Alexa skill for traffic time and directions",
+  "description": "Alexa skill for traffic time",
   "main": "index.js",
   "author": "Dany Stefan",
   "license": "ISC",
