@@ -1,4 +1,5 @@
 var alexa = require('alexa-app');
+var AWS = require('aws-sdk');
 var launchRequest = require('./launchRequest');
 var yesIntent = require('./yesIntent');
 var noIntent = require('./noIntent');
@@ -25,9 +26,7 @@ app.intent(
         "slots": {"Name": "LIST_OF_NAMES"},
         "utterances": [
             "{the|my|} name is {-|Name}",
-            "{the|my|} name is {-|Name} by {-|Options}",
             "name is {-|Name}",
-            "name is {-|Name} by {-|Options}"
         ]
     },
     nameIntent.nameIntentHandler

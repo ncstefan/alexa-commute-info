@@ -14,16 +14,22 @@ exports.nameIntentHandler = function(req,res) {
     switch(req.sessionAttributes.previousState) {
 
         // intent did not trigger at start-up -> triggered at launchRequest
-        case "loadingUserInfo":
-            res.session("previousState", "validatingName");
-            console.log("nameIntent() for: " + req.slot('Name') + " by " + req.slot('Options'));
+        case "validatingName":
+            res.session("previousState", "confirmName");
             
             //get the name 
             var name = req.slot('Name');
             console.log("Intent for name: " + name);
+
+            //save the current user
+            res.session("crtUser", req.slot('Name'));
+
+            console.log("Name: " + req.sessionAttributes.crtUser);
+            var prompt = "Your name is " + req.sessionAttributes.crtUser + ". Correct?";
+            res.say(prompt).shouldEndSession(false);
             
             //get the car|bus option
-            var opt = req.slot('Options');
+            /*var opt = req.slot('Options');
             if (!opt) opt = "car";
 
             //ask again if name not found in the list
@@ -39,12 +45,12 @@ exports.nameIntentHandler = function(req,res) {
             commute_info.getLiveTraffic(name, opt, function(duration) {
                 res.say("Hello " + name + "! Your commute by " + opt + " is " + String(Math.round(duration/60)) + " minutes.").shouldEndSession(true);
                 res.send();
-            });
+            });*/
 
             //return false immediately so alexa-app doesn't send the response
             //and waits for the async call above to return the response
             break;
     }
     
-    return false;
+    return true;
 };

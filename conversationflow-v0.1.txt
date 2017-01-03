@@ -1,0 +1,15 @@
+launchRequest
+=============
+
+R: Alexa, ask commute.
+    - (alxID recognized)                        - (alxID not recognized)  -----> function in file: loadUserInfo.js
+    A: Record found.                            A: We haven't met yet. Please register in the portal.       /*loadingUserInfo*/
+                                                (Alexa app) - card sent with steps to follow        /*validatingAddress*/
+                                                (X)    
+    A: (list of all the names in the record)        /*validatingName*/
+    A: For which one?
+    R: <nameIntent> My name is <>.  ------> other utterance: time for <name> (/*validatingName*/), calls loadUserInfo and continues
+    A: Your name is <>. Correct?    //state -> from validatingName
+    R: - yesIntent  /*gettingTraffic*/                          |   - noIntent
+    A: (gets traffic time)                                       A: Sorry I didn't understand you. Please repeat by saying, my name is.
+    (X)                                                             -> go to /*validatingName*/
