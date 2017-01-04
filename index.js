@@ -3,6 +3,8 @@ var launchRequest = require('./launchRequest');
 var yesIntent = require('./yesIntent');
 var noIntent = require('./noIntent');
 var nameIntent = require('./nameIntent');
+var stopIntent = require('./stopIntent');
+var helpIntent = require('./helpIntent');
 
 //allow this module to be reloaded by hotswap when changed
 module.change_code = 1;
@@ -95,6 +97,36 @@ app.intent(
         ]
     },
     noIntent.noIntentHandler
+);
+
+//StopIntent
+app.intent(
+    'AMAZON.StopIntent', 
+    {
+        "slots": {},
+        "utterances": []
+    },
+    stopIntent.stopIntentHandler
+);
+
+//CancelIntent
+app.intent(
+    'AMAZON.CancelIntent', 
+    {
+        "slots": {},
+        "utterances": []
+    },
+    stopIntent.stopIntentHandler
+);
+
+//HelpIntent
+app.intent(
+    'AMAZON.HelpIntent', 
+    {
+        "slots": {},
+        "utterances": []
+    },
+    helpIntent.helpIntentHandler
 );
 
 //error
