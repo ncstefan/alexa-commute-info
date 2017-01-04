@@ -6,7 +6,8 @@ exports.nameIntentHandler = function(req,res) {
 
     console.log("nameIntent()");
 
-    if(!req.session("previousState")) {
+    if(!req.session("previousState")){
+        console.log("NameIntent() - no state found");
         res.shouldEndSession(false);
         return true;
     }

@@ -19,7 +19,21 @@ app.dictionary = {
 //launchRequest
 app.launch(launchRequest.launchRequestHandler);
 
-//nameIntent
+// TrafficIntent
+app.intent(
+    'TrafficIntent', 
+    {
+        "slots": {"Destinations": "AMAZON.Person","Options": "LIST_OF_OPTIONS"},
+        "utterances": [
+            "{time|} for {-|Destinations} by {-|Options}", 
+            "{time|} for {-|Destinations}",
+            "{time|} by {-|Options} for {-|Destinations}"
+        ]
+    },
+    trafficIntent.trafficIntentHandler
+);
+
+// NameIntent
 app.intent(
     'NameIntent', 
     {
@@ -32,7 +46,33 @@ app.intent(
     nameIntent.nameIntentHandler
 );
 
-//yesIntent
+// AddressIntent
+app.intent(
+    'AddressIntent', 
+    {
+        "slots": {"Address": "AMAZON.PostalAddress"},
+        "utterances": [
+            "{the|my|} {home|commute|} {address|destination} is {-|Address}"
+        ]
+    },
+    addresIntent.addressIntentHandler
+);
+
+/*
+// UserIDIntent
+app.intent(
+    'UserIDIntent', 
+    {
+        "slots": {},
+        "utterances": [
+            "{the|my|} {user|userID}"
+        ]
+    },
+    useridIntent.useridIntentHandler
+);
+*/
+
+// YesIntent
 app.intent(
     'YesIntent', 
     {
