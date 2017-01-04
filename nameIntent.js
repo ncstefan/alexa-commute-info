@@ -22,10 +22,12 @@ exports.nameIntentHandler = function(req,res) {
             console.log("Intent for name: " + name);
 
             //save the current user
-            res.session("crtUser", req.slot('Name'));
+            req.sessionAttributes["crtUser"] = name;
+            var sessionCrtUser = req.sessionAttributes["crtUser"];
+            //res.session("crtUser", req.slot(name));
+            console.log("Name: " + sessionCrtUser);
 
-            console.log("Name: " + req.sessionAttributes.crtUser);
-            var prompt = "Your name is " + req.sessionAttributes.crtUser + ". Correct?";
+            var prompt = "Your name is " + sessionCrtUser + ". Correct?";
             res.say(prompt).shouldEndSession(false);
             
             //get the car|bus option

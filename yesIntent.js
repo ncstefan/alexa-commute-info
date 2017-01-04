@@ -14,8 +14,8 @@ console.log("yesIntent()");
         case "confirmName":
             res.session("previousState", "getTraffic");
             var name = req.slot('Name');
-            var name = req.sessionAttributes.crtUser;
-            console.log("yesIntent() for: " + name);
+            var crtName = req.sessionAttributes["crtUser"];
+            console.log("yesIntent() for: " + crtName);
 
             //get the car|bus option
             //var opt = req.slot('Options');
@@ -23,7 +23,7 @@ console.log("yesIntent()");
             //var opt = "car";
 
             //ask again if name not found in the list
-            if (app.dictionary.names.indexOf(name) == -1){
+            if (app.dictionary.names.indexOf(crtName) == -1){
                 var prompt = "Your name does not appear in the portal. Please register your userID in the registration portal.";
                 res.say(prompt).shouldEndSession(false);
                 res.send();
@@ -44,8 +44,8 @@ console.log("yesIntent()");
             //res.session("crtUser", req.slot('Name'));
 
             //get commute duration for <name>
-            commute_info.getLiveTraffic(name, function(duration) {
-                res.say("Hello " + name + "! Your commute by car " + String(Math.round(duration/60)) + " minutes.").shouldEndSession(true);
+            commute_info.getLiveTraffic(crtName, function(duration) {
+                res.say("Hello " + crtName + "! Your commute by car " + String(Math.round(duration/60)) + " minutes.").shouldEndSession(true);
                 res.send();
             });
 

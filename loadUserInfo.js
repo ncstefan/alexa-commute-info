@@ -20,13 +20,16 @@ exports.loadUserInfo = function(db, getUserInfoCallback) {
         }
         else {
             console.log("success in loading user information");
+            console.log(data);
+            console.log(data.Item.names.L[0]);
             
             //populate dictionary with names
-            for (var i = 0; i < app.dictionary.names.length; i++) {
+            for (var i = 0; i < app.dictionary.names.length; i++) {     //optimization: .clear() method
                 app.dictionary.names.pop();
             }
-            app.dictionary.names.push(data.Item.name1.S);
-            console.log(app.dictionary.names.indexOf(data.Item.name1.S));
+            //console.log("from data: " + data.Item.names.L[0].M.Name.S);
+            app.dictionary.names.push(data.Item.names.L[0].M.Name.S);
+            console.log(app.dictionary.names.indexOf(data.Item.names.L[0].M.Name.S));
             console.log(app.dictionary.names[0]);
 
             //populate dictionary with home address
@@ -41,8 +44,8 @@ exports.loadUserInfo = function(db, getUserInfoCallback) {
             for (var i = 0; i < app.dictionary.dest.length; i++) {
                 app.dictionary.dest.pop();
             }
-            app.dictionary.dest.push(data.Item.address1.S);
-            console.log(app.dictionary.dest.indexOf(data.Item.address1.S));
+            app.dictionary.dest.push(data.Item.names.L[0].M.Address.S);
+            console.log(app.dictionary.dest.indexOf(data.Item.names.L[0].M.Address.S));
             console.log(app.dictionary.dest[0]);
 
             //return success: true
