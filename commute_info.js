@@ -35,7 +35,7 @@ exports.getLiveTraffic = function(name, getTrafficCallback) {
     console.log("getLiveTraffic()");
 
     // Get route information
-    var req = https.request(setMapAPIOptions(name), function(res) {
+        var req = https.request(setMapAPIOptions(name), function(res) {
         var str = '';
 
         res.on('data', function(chunk) {

@@ -7,7 +7,7 @@ exports.launchRequestHandler = function(req,res) {
 
     console.log("launchRequest()");
 
-    res.session("previousState", "loadingUserInfo");
+    res.session("previousState", "onLaunch");
     //console.log("state: " + req.sesssionAttributes.previousState);
 
     var db = new AWS.DynamoDB({region: 'us-east-1'});
@@ -16,6 +16,7 @@ exports.launchRequestHandler = function(req,res) {
     loadUserInfo.loadUserInfo(db, function(success, data) {
         if(!success) {
             //user record not found
+            res.session("previousState", "userNotFound");
             var prompt = "We haven't met before. Welcome to the Commute Info. First, you will need to register your Alexa location and the commute destinations on the registration portal. Simply follow the instructions on the card I just sent to your Alexa application.";
             res.say(prompt).shouldEndSession(false);
             res.send();
@@ -29,6 +30,7 @@ exports.launchRequestHandler = function(req,res) {
         }
         else{
             //user found
+            res.session("previousState", "userFound");
             console.log("Found userID in DB: "+ JSON.stringify(data));
 
             var prompt = "Hello, I found your registration record. Your address is: " + data.Item.alexaLocation.S + ".";   //make it a question (y/n)
@@ -56,9 +58,9 @@ exports.launchRequestHandler = function(req,res) {
             }
 
             //state change
-            res.session("previousState", "validatingName");
+            res.session("previousState", "nameNotFound");
             //list registered names
-            console.log("Registered destination routes:" + namelist + ".");
+            console.log("Registered destination routes: " + namelist + ".");
             var prompt = "And you added destination routes for: " + namelist + ". For who would you like to know the commute time? Say, my name is." ;
             res.say(prompt).shouldEndSession(false).send();
         }

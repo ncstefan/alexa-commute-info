@@ -15,19 +15,19 @@ exports.nameIntentHandler = function(req,res) {
     switch(req.sessionAttributes.previousState) {
 
         // intent did not trigger at start-up -> triggered at launchRequest
-        case "validatingName":
+        case "nameNotFound":
             res.session("previousState", "confirmName");
             
             //get the name 
             var name = req.slot('Name');
-    console.log("Intent for name: " + name);
+            var caseName = name.charAt(0).toUpperCase() + name.substr(1).toLowerCase();
+            console.log("Intent for name: " + caseName);
 
             //save the current user
-            res.session("crtUser", name);
-            var sessionCrtUser = req.sessionAttributes["crtUser"];
-    console.log("Name: " + sessionCrtUser + " saved to session");
+            res.session("crtUser", caseName);
 
-            var prompt = "Your name is " + sessionCrtUser + ". Correct?";
+            var prompt = "Your name is " + caseName + ". Correct?";
+            console.log("Your name is " + caseName + ". Correct?");
             res.say(prompt).shouldEndSession(false);
             
             //get the car|bus option

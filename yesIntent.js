@@ -1,4 +1,5 @@
 'use strict';
+var commute_info = require('./commute_info');
 
 //yesIntent
 exports.yesIntentHandler = function(req,res) {
@@ -15,13 +16,14 @@ console.log("yesIntent()");
 
     switch(req.sessionAttributes.previousState) {
         case "confirmName":
-            res.session("previousState", "getTraffic");
+            res.session("previousState", "correctName");
 
             var crtName = req.sessionAttributes["crtUser"];
             console.log("Processing yesIntent() for: " + crtName);
+            console.log(crtName + ".");
 
             //ask again if name not found in the list
-            if (app.dictionary.names.indexOf(crtName) == -1){
+            if (app.dictionary.names.indexOf(crtName) == -1) {
                 //user record not found
                 var prompt = "Your name and your destination route are not registered. Please follow the instructions you received in the application card to register on the Commute Info's application portal.";
                 res.say(prompt).shouldEndSession(false).send();
@@ -34,12 +36,14 @@ console.log("yesIntent()");
                 });                
                 return true;
             }
-
-            //retrieve commute duration for <name>
-            commute_info.getLiveTraffic(crtName, function(duration) {
-                res.say("Hello " + crtName + "! Your commute by car " + String(Math.round(duration/60)) + " minutes.");
-                res.shouldEndSession(true).send();
-            });
+            else {
+                //retrieve commute duration for <name>
+                console.log("else statement");
+                commute_info.getLiveTraffic(crtName, function(duration) {
+                    res.say("Hello " + crtName + "! Your commute by car " + String(Math.round(duration/60)) + " minutes.");
+                    res.shouldEndSession(true).send();
+                });
+            }
 
             //return false immediately so alexa-app doesn't send the response
             //and waits for the async call above to return the response
