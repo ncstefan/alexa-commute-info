@@ -29,12 +29,8 @@ exports.launchRequestHandler = function(req,res) {
         }
         else{
             //user found
-            console.log("Found table in DB");
             console.log("Found userID in DB: "+ JSON.stringify(data));
-            
-            //state change 
-            res.session("previousState", "validatingAddress");
-      
+
             var prompt = "Hello, I found your registration record. Your address is: " + data.Item.alexaLocation.S + ".";   //make it a question (y/n)
             res.say(prompt).shouldEndSession(false).send();
 
@@ -63,6 +59,7 @@ exports.launchRequestHandler = function(req,res) {
 
             //state change
             res.session("previousState", "validatingName");
+            //list registered names
             console.log("Registered destination routes:" + namelist + ".");
             var prompt = "And you added destination routes for: " + namelist + ". For who would you like to know the commute time? Say, my name is." ;
             res.say(prompt).shouldEndSession(false).send();
