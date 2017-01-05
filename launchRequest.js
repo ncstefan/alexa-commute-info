@@ -35,16 +35,14 @@ exports.launchRequestHandler = function(req,res) {
             res.say(prompt).shouldEndSession(false).send();
 
             //list all names
-            var l = app.dictionary.names.length;
-            console.log(l);
             var namelist = '';
             var idx = 0;
-
-//needs review ??? - loop required
-            if (l == 1) {
+            if (app.dictionary.names.length == 1) {
+                //single name/destination
                 namelist = namelist + app.dictionary.names[0];
             }
             else {
+                //multiple names/destinations
                 app.dictionary.names.forEach(function(element) {
                     if (idx < app.dictionary.names.length) {
                         namelist = namelist + element + ",";
