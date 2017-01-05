@@ -16,7 +16,6 @@ console.log("yesIntent()");
     switch(req.sessionAttributes.previousState) {
         case "confirmName":
             res.session("previousState", "getTraffic");
-            var name = req.slot('Name');  //!!!!!! this won't work
 
             var crtName = req.sessionAttributes["crtUser"];
             console.log("Processing yesIntent() for: " + crtName);
