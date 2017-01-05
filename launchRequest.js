@@ -14,8 +14,9 @@ exports.launchRequestHandler = function(req,res) {
 
     //call the loadUserInfo function 
     loadUserInfo.loadUserInfo(db, function(success, data) {
-        if(success == false) {
-            var prompt = "We haven't met before. Please register your userID in the registration portal.";
+        if(!success) {
+            //user record not found
+            var prompt = "We haven't met before. Welcome to the Commute Info. First, you will need to register your Alexa location and the commute destinations on the registration portal. Simply follow the instructions on the card I just sent to your Alexa application.";
             res.say(prompt).shouldEndSession(false);
             res.send();
 
@@ -25,21 +26,17 @@ exports.launchRequestHandler = function(req,res) {
                 title: "Here is your userID", // this is not required for type Simple
                 text: "Copy this:\n" + req.userId + "\nVisit the registration portal here:\n" + "http://alexacommuteinforeg.us-east-1.elasticbeanstalk.com" + "\nFollow these steps:\n1. Copy and paste your userID into the portal to have access to our services\n2. Provide the names of everyone in your household along with their home address and their destination address\n3. Now you can start using our services"
             });
-            var prompt = "Welcome, check your alexa app, you will be provided with a card and some steps to follow.";
-            res.say(prompt).shouldEndSession(true);
-            res.send();
         }
-        if(success == true) {
+        else{
+            //user found
             console.log("Found table in DB");
             console.log("Found userID in DB: "+ JSON.stringify(data));
             
             //state change 
             res.session("previousState", "validatingAddress");
-            //console.log("state: " + req.sesssionAttributes.previousState);
-
-            var prompt = "Hello, I found your registration record. This is your address: " + data.Item.alexaLocation.S + ".";   //make it a question (y/n)
-            res.say(prompt).shouldEndSession(false);
-            res.send();
+      
+            var prompt = "Hello, I found your registration record. Your address is: " + data.Item.alexaLocation.S + ".";   //make it a question (y/n)
+            res.say(prompt).shouldEndSession(false).send();
 
             //list all names
             var l = app.dictionary.names.length;
@@ -47,6 +44,7 @@ exports.launchRequestHandler = function(req,res) {
             var namelist = '';
             var idx = 0;
 
+//needs review ??? - loop required
             if (l == 1) {
                 namelist = namelist + app.dictionary.names[0];
             }
@@ -65,12 +63,9 @@ exports.launchRequestHandler = function(req,res) {
 
             //state change
             res.session("previousState", "validatingName");
-            //console.log("state: " + req.sesssionAttributes.previousState);
-
-            console.log("Here is the list of names recorded in your portal, " + namelist + ".");
-            var prompt = "Here is the list of names recorded in your portal, " + namelist + ". For which one would you like to get the commute time? Say, my name is." ;
-            res.say(prompt).shouldEndSession(false);
-            res.send();
+            console.log("Registered destination routes:" + namelist + ".");
+            var prompt = "And you added destination routes for: " + namelist + ". For who would you like to know the commute time? Say, my name is." ;
+            res.say(prompt).shouldEndSession(false).send();
         }
     })
 
