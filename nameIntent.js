@@ -20,13 +20,12 @@ exports.nameIntentHandler = function(req,res) {
             
             //get the name 
             var name = req.slot('Name');
-            console.log("Intent for name: " + name);
+    console.log("Intent for name: " + name);
 
             //save the current user
-            req.sessionAttributes["crtUser"] = name;
+            res.session("crtUser", name);
             var sessionCrtUser = req.sessionAttributes["crtUser"];
-            //res.session("crtUser", req.slot(name));
-            console.log("Name: " + sessionCrtUser);
+    console.log("Name: " + sessionCrtUser + " saved to session");
 
             var prompt = "Your name is " + sessionCrtUser + ". Correct?";
             res.say(prompt).shouldEndSession(false);
