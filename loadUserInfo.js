@@ -3,7 +3,7 @@
 exports.loadUserInfo = function(db, userID, getUserInfoCallback) {
 
     console.log("loading user data for:" + userID);
-    
+
     var params = {
         TableName : "alexacommute_sign_up",
         Key : {
@@ -13,6 +13,8 @@ exports.loadUserInfo = function(db, userID, getUserInfoCallback) {
         }
     }
 
+    console.log("params:" + JSON.stringify(params));
+    
     db.getItem(params, function(err, data) {
         if ((err == undefined || err == null) && data.Item == undefined) {
             console.log("error in loading user information");
