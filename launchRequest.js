@@ -13,7 +13,7 @@ exports.launchRequestHandler = function(req,res) {
     var db = new AWS.DynamoDB({region: 'us-east-1'});
 
     //call the loadUserInfo function 
-    loadUserInfo.loadUserInfo(db, function(success, data) {
+    loadUserInfo.loadUserInfo(db, req.userID, function(success, data) {
         if(!success) {
             //user record not found
             res.session("previousState", "userNotFound");

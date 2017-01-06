@@ -1,12 +1,12 @@
 'use strict'
 
-exports.loadUserInfo = function(db, getUserInfoCallback) {
+exports.loadUserInfo = function(db, userID, getUserInfoCallback) {
 
     var params = {
         TableName : "alexacommute_sign_up",
         Key : {
             alxID : {
-                'S' : req.userId
+                'S' : userID
             }
         }
     }
