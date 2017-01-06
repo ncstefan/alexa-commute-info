@@ -34,7 +34,7 @@ console.log("noIntent()");
             res.session("previousState", "nameNotFound");
             console.log("noIntent(): nameNotFound");
 
-            var prompt = "Sorry, I might of not pronouced it correctly. For who would you like to know the commute time? Say, my name is.";
+            var prompt = "Sorry, I might have not understood your name correctly. Please repeat. Say, my name is:";
             res.say(prompt).shouldEndSession(false).send();
     }
 
