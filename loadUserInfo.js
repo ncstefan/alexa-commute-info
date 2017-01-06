@@ -20,7 +20,7 @@ exports.loadUserInfo = function(db, getUserInfoCallback) {
         }
         else {
             console.log("success in loading user information");
-            //console.log(data);
+            console.log(data);
             //console.log(data.Item.names.L[0]);
             
             //populate dictionary with names
