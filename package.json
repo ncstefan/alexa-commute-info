@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@google/maps": "^0.3.1",
-    "alexa-app": "^2.3.4"
+    "alexa-app": "^2.3.4",
+    "aws-sdk": "^2.7.21"
   }
 }

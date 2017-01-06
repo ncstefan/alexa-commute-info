@@ -33,35 +33,7 @@ exports.launchRequestHandler = function(req,res) {
             res.session("previousState", "userFound");
             console.log("Found userID in DB: "+ JSON.stringify(data));
 
-            var prompt = "Hello, I found your registration record. Your address is: " + data.Item.alexaLocation.S + ".";   //make it a question (y/n)
-            res.say(prompt).shouldEndSession(false).send();
-
-            //list all names
-            var namelist = '';
-            var idx = 0;
-            if (app.dictionary.names.length == 1) {
-                //single name/destination
-                namelist = namelist + app.dictionary.names[0];
-            }
-            else {
-                //multiple names/destinations
-                app.dictionary.names.forEach(function(element) {
-                    if (idx < app.dictionary.names.length) {
-                        namelist = namelist + element + ",";
-                        idx++;
-                    }
-                    else {
-                        namelist = namelist + " and " + element;
-                        idx++;
-                    }
-                }); 
-            }
-
-            //state change
-            res.session("previousState", "nameNotFound");
-            //list registered names
-            console.log("Registered destination routes: " + namelist + ".");
-            var prompt = "And you added destination routes for: " + namelist + ". For who would you like to know the commute time? Say, my name is." ;
+            var prompt = "Hello, I found your registration record. Is this your home address: " + data.Item.alexaLocation.S + "?";   //make it a question (y/n)
             res.say(prompt).shouldEndSession(false).send();
         }
     })
