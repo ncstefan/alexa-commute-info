@@ -2,6 +2,8 @@
 
 exports.loadUserInfo = function(db, userID, getUserInfoCallback) {
 
+    console.log("loading user data for:" + userID);
+    
     var params = {
         TableName : "alexacommute_sign_up",
         Key : {
