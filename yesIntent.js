@@ -47,12 +47,16 @@ console.log("yesIntent()");
                 else {
                     //multiple names/destinations
                     app.dictionary.names.forEach(function(element) {
-                        if (idx < app.dictionary.names.length - 1) {
-                            namelist = namelist + element + ",";
+                        if (idx == app.dictionary.names.length - 1) {
+                            namelist += " and " + element;
+                        }
+                        else if (idx == 0) {
+                            namelist += element;
                             idx++;
                         }
                         else {
-                            namelist = namelist + " and " + element;
+                            namelist += ", " + element;
+                            idx++;
                         }
                     }); 
                 }
@@ -60,7 +64,7 @@ console.log("yesIntent()");
                 //state change
                 res.session("previousState", "nameNotFound");
                 //list registered names
-                console.log("Registered destination routes: " + namelist + ".");
+                console.log("Registered destination routes: " + namelist);
                 var prompt = "It seems like your name is not registered in your portal. Please choose a name listed in your portal. You added destination routes for: " + namelist + ". For who would you like to know the commute time? Say, my name is." ;
                 res.say(prompt).shouldEndSession(false).send();
             }
@@ -68,7 +72,7 @@ console.log("yesIntent()");
                 //retrieve commute duration for <name>
                 console.log("else statement");
                 commute_info.getLiveTraffic(crtName, function(duration) {
-                    res.say("Hello " + crtName + "! Your commute by car " + String(Math.round(duration/60)) + " minutes.");
+                    res.say("Hello " + crtName + "! Your commute by car is: " + String(Math.round(duration/60)) + " minutes.");
                     res.shouldEndSession(true).send();
                 });
             }
@@ -90,12 +94,15 @@ console.log("yesIntent()");
                 else {
                     //multiple names/destinations
                     app.dictionary.names.forEach(function(element) {
-                        if (idx < app.dictionary.names.length) {
-                            namelist = namelist + element + ",";
+                        if (idx == app.dictionary.names.length - 1) {
+                            namelist += " and " + element;
+                        }
+                        else if (idx == 0) {
+                            namelist += element;
                             idx++;
                         }
                         else {
-                            namelist = namelist + " and " + element;
+                            namelist += ", " + element;
                             idx++;
                         }
                     }); 
@@ -104,7 +111,7 @@ console.log("yesIntent()");
                 //state change
                 res.session("previousState", "nameNotFound");
                 //list registered names
-                console.log("Registered destination routes: " + namelist + ".");
+                console.log("Registered destination routes: " + namelist);
                 var prompt = "And you added destination routes for: " + namelist + ". For who would you like to know the commute time? Say, my name is." ;
                 res.say(prompt).shouldEndSession(false).send();
     }
