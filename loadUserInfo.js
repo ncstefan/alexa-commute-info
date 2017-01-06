@@ -14,14 +14,14 @@ exports.loadUserInfo = function(db, userID, getUserInfoCallback) {
     }
 
     console.log("params:" + JSON.stringify(params));
-    
+
     db.getItem(params, function(err, data) {
         if ((err == undefined || err == null) && data.Item == undefined) {
             console.log("error in loading user information");
             getUserInfoCallback(false);
         }
         else if(data == null){
-            console.log("user not found");
+            console.log("user not found: " + err);
             getUserInfoCallback(false);
         }
         else {            
