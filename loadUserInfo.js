@@ -6,8 +6,7 @@ exports.loadUserInfo = function(db, getUserInfoCallback) {
         TableName : "alexacommute_sign_up",
         Key : {
             alxID : {
-                'S' : "amzn1.ask.account.AEZZJ3JVFHBTCTX7OREACSPKWXHUL4OI4ST2KOV2PGXZAO6ZOJNT6L46CD7MXYVKTSHDQ7YT2HHWPM7MX4TU2ATEMR5CBQQWQ25ETTMOD2UQCEMOX3IYA7HEEFSRG5L3JJN4B46DS4WPF2RDH2XEFT7V7E6GARFAHJIII7RUY6NF62VPFKFZYS6XSH3EE37RLCM53J7UX4XYULA"
-                //req.userId
+                'S' : req.userId
             }
         }
     }
