@@ -20,33 +20,30 @@ exports.loadUserInfo = function(db, getUserInfoCallback) {
         }
         else {
             console.log("success in loading user information");
-            console.log(data);
-            console.log(data.Item.names.L[0]);
+            //console.log(data);
+            //console.log(data.Item.names.L[0]);
             
             //populate dictionary with names
-            for (var i = 0; i < app.dictionary.names.length; i++) {     //optimization: .clear() method
-                app.dictionary.names.pop();
+            app.dictionary.names = [];
+            for (var i = 0; i < data.Item.names.L.length; i++) {
+                app.dictionary.names.push(data.Item.names.L[i].M.Name.S);
             }
-            //console.log("from data: " + data.Item.names.L[0].M.Name.S);
-            app.dictionary.names.push(data.Item.names.L[0].M.Name.S);
-            console.log(app.dictionary.names.indexOf(data.Item.names.L[0].M.Name.S));
-            console.log(app.dictionary.names[0]);
+            console.log(app.dictionary.names.indexOf(data.Item.names.L[1].M.Name.S));
+            console.log(app.dictionary.names[1]);
 
             //populate dictionary with home address
-            for (var i = 0; i < app.dictionary.orig.length; i++) {
-                app.dictionary.orig.pop();
-            }
+            app.dictionary.orig = [];
             app.dictionary.orig.push(data.Item.alexaLocation.S);
             console.log(app.dictionary.orig.indexOf(data.Item.alexaLocation.S));
             console.log(app.dictionary.orig[0]);
 
             //populate dictionary with destination address
-            for (var i = 0; i < app.dictionary.dest.length; i++) {
-                app.dictionary.dest.pop();
+            app.dictionary.dest = [];
+            for (var i = 0; i < data.Item.names.L.length; i++) {
+                app.dictionary.dest.push(data.Item.names.L[i].M.Address.S);
             }
-            app.dictionary.dest.push(data.Item.names.L[0].M.Address.S);
-            console.log(app.dictionary.dest.indexOf(data.Item.names.L[0].M.Address.S));
-            console.log(app.dictionary.dest[0]);
+            console.log(app.dictionary.dest.indexOf(data.Item.names.L[1].M.Address.S));
+            console.log(app.dictionary.dest[1]);
 
             //return success: true
             getUserInfoCallback(true, data);

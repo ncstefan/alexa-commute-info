@@ -11,13 +11,9 @@ function setMapAPIOptions(name) {
     };
 
     console.log("Setting Options URI");
-    console.log(app.dictionary.names[0]);
-    console.log(app.dictionary.orig[0]);
-    console.log(app.dictionary.dest[0]);
-
 
     // Set route URI for <name> depending on transportation option
-    var orig = app.dictionary.orig[app.dictionary.names.indexOf(name)].replace(/ /g, "+");
+    var orig = app.dictionary.orig[0].replace(/ /g, "+");
     var dest = app.dictionary.dest[app.dictionary.names.indexOf(name)].replace(/ /g, "+");
     console.log(orig);
     console.log(dest);
@@ -35,7 +31,7 @@ exports.getLiveTraffic = function(name, getTrafficCallback) {
     console.log("getLiveTraffic()");
 
     // Get route information
-    var req = https.request(setMapAPIOptions(name), function(res) {
+        var req = https.request(setMapAPIOptions(name), function(res) {
         var str = '';
 
         res.on('data', function(chunk) {

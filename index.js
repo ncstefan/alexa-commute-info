@@ -29,6 +29,7 @@ app.intent(
         "utterances": [
             "{the|my|} name is {-|Name}",
             "name is {-|Name}",
+            "{-|Name}"
         ]
     },
     nameIntent.nameIntentHandler
