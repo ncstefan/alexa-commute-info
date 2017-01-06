@@ -25,7 +25,7 @@ app.launch(launchRequest.launchRequestHandler);
 app.intent(
     'NameIntent', 
     {
-        "slots": {"Name": "LIST_OF_NAMES"},
+        "slots": {"Name": "AMAZON.Person"},
         "utterances": [
             "{the|my|} name is {-|Name}",
             "name is {-|Name}",
