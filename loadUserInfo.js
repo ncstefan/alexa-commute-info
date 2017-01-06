@@ -1,5 +1,4 @@
 'use strict'
-var AWS = require('aws-sdk');
 
 exports.loadUserInfo = function(db, getUserInfoCallback) {
 
@@ -18,9 +17,13 @@ exports.loadUserInfo = function(db, getUserInfoCallback) {
             console.log("error in loading user information");
             getUserInfoCallback(false);
         }
-        else {
+        else if(data == null){
+            console.log("user not found");
+            getUserInfoCallback(false);
+        }
+        else {            
             console.log("success in loading user information");
-            //console.log(data);
+            console.log(data);
             //console.log(data.Item.names.L[0]);
             
             //populate dictionary with names
