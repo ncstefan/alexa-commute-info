@@ -1,58 +1,67 @@
 'use strict';
 var commute_info = require('./commute_info');
 
-// nameIntent
-exports.nameIntentHandler = function(req,res) {
+try {
 
-    console.log("nameIntent()");
+    // nameIntent
+    exports.nameIntentHandler = function(req,res) {
 
-    if(!req.session("previousState")){
-        console.log("NameIntent() - no state found");
-        res.shouldEndSession(false);
+        console.log("nameIntent()");
+
+        if(!req.session("previousState")){
+            console.log("NameIntent() - no state found");
+            res.shouldEndSession(false);
+            return true;
+        }
+        
+        switch(req.sessionAttributes.previousState) {
+
+            // intent did not trigger at start-up -> triggered at launchRequest
+            case "nameNotFound":
+                res.session("previousState", "confirmName");
+                
+                //get the name 
+                var name = req.slot('Name');
+                var caseName = name.charAt(0).toUpperCase() + name.substr(1).toLowerCase();
+                console.log("Intent for name: " + caseName);
+
+                //save the current user
+                res.session("crtUser", caseName);
+
+                var prompt = "Your name is " + caseName + ". Correct?";
+                console.log("Your name is " + caseName + ". Correct?");
+                res.say(prompt).shouldEndSession(false);
+                
+                //get the car|bus option
+                /*var opt = req.slot('Options');
+                if (!opt) opt = "car";
+
+                //ask again if name not found in the list
+                if (app.dictionary.names.indexOf(name) == -1){
+                    res.say("Sorry, I didn't catch your name. Please repeat your name again. Say my name is.").shouldEndSession(false);
+                    return true;
+                }
+
+                //save the current user
+                res.session("crtUser", req.slot('Name'));
+
+                //get commute duration for <name>
+                commute_info.getLiveTraffic(name, opt, function(duration) {
+                    res.say("Hello " + name + "! Your commute by " + opt + " is " + String(Math.round(duration/60)) + " minutes.").shouldEndSession(true);
+                    res.send();
+                });*/
+
+                //return false immediately so alexa-app doesn't send the response
+                //and waits for the async call above to return the response
+                break;
+        }
+        
         return true;
-    }
-    
-    switch(req.sessionAttributes.previousState) {
+    };
 
-        // intent did not trigger at start-up -> triggered at launchRequest
-        case "nameNotFound":
-            res.session("previousState", "confirmName");
-            
-            //get the name 
-            var name = req.slot('Name');
-            var caseName = name.charAt(0).toUpperCase() + name.substr(1).toLowerCase();
-            console.log("Intent for name: " + caseName);
+}
 
-            //save the current user
-            res.session("crtUser", caseName);
-
-            var prompt = "Your name is " + caseName + ". Correct?";
-            console.log("Your name is " + caseName + ". Correct?");
-            res.say(prompt).shouldEndSession(false);
-            
-            //get the car|bus option
-            /*var opt = req.slot('Options');
-            if (!opt) opt = "car";
-
-            //ask again if name not found in the list
-            if (app.dictionary.names.indexOf(name) == -1){
-                res.say("Sorry, I didn't catch your name. Please repeat your name again. Say my name is.").shouldEndSession(false);
-                return true;
-            }
-
-            //save the current user
-            res.session("crtUser", req.slot('Name'));
-
-            //get commute duration for <name>
-            commute_info.getLiveTraffic(name, opt, function(duration) {
-                res.say("Hello " + name + "! Your commute by " + opt + " is " + String(Math.round(duration/60)) + " minutes.").shouldEndSession(true);
-                res.send();
-            });*/
-
-            //return false immediately so alexa-app doesn't send the response
-            //and waits for the async call above to return the response
-            break;
-    }
-    
-    return true;
-};
+catch(err) {
+    console.log("error handling: nameIntent()")
+    res.say("Something went terribly wrong. Please try again.").shouldEndSession(true).send();
+}

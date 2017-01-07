@@ -91,7 +91,8 @@ app.intent(
 
 //error
 app.error = function(exception, request, response) {
-    response.say("Sorry, something bad happened");
+    console.log("generic error handling");
+    response.say("Sorry, something bad happened. Please try again.").send();
 };
 
 module.exports = app;
