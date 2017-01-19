@@ -18,11 +18,11 @@ exports.loadUserInfo = function(db, userID, getUserInfoCallback) {
     db.getItem(params, function(err, data) {
         if ((err == undefined || err == null) && data.Item == undefined) {
             console.log("error in loading user information");
-            getUserInfoCallback(false);
+            getUserInfoCallback(false, data);
         }
         else if(data == null){
             console.log("user not found: " + err);
-            getUserInfoCallback(false);
+            getUserInfoCallback(false, data);
         }
         else {            
             console.log("success in loading user information");
