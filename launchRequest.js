@@ -2,6 +2,7 @@
 var loadUserInfo = require('./loadUserInfo');
 var AWS = require('aws-sdk');
 
+<<<<<<< HEAD
 //credential profiles defined here: ~/.aws/credentials
 //only for debuging
 //use 'default' for production and udpload the folder
@@ -71,6 +72,67 @@ exports.launchRequestHandler = function(req,res) {
             })
         }     
     });    
+=======
+try {
 
-    return false;
-};
+    //launchRequest handler
+    exports.launchRequestHandler = function(req,res) {
+        try {
+                console.log("launchRequest()");
+
+                res.session("previousState", "onLaunch");
+                //console.log("state: " + req.sesssionAttributes.previousState);
+
+                var db = new AWS.DynamoDB({region: 'us-east-1'});
+
+            //call the loadUserInfo function 
+            loadUserInfo.loadUserInfo(db, req.userId, function(success, data) {
+                try {
+                    if(!success) {
+                        //user record not found
+                        res.session("previousState", "userNotFound");
+                        var prompt = "We haven't met before. Welcome to the Commute Info. First, you will need to register your Alexa location and the commute destinations on the registration portal. Simply follow the instructions on the card I just sent to your Alexa application.";
+                        res.say(prompt).shouldEndSession(false);
+                        res.send();
+
+                        //send card
+                        res.card({
+                            type: "Standard",
+                            title: "Here is your userID", // this is not required for type Simple
+                            text: "Copy this:\n" + req.userId + "\nVisit the registration portal here:\n" + "http://alexacommuteinforeg.us-east-1.elasticbeanstalk.com" + "\nFollow these steps:\n1. Copy and paste your userID into the portal to have access to our services\n2. Provide the names of everyone in your household along with their home address and their destination address\n3. Now you can start using our services"
+                        });
+                    }
+                    else {
+                        //user found
+                        res.session("previousState", "userFound");
+                        console.log("Found userID in DB: "+ JSON.stringify(data));
+
+                        var prompt = "Hello, I found your registration record. Is this your home address: " + data.Item.alexaLocation.S + "?";   //make it a question (y/n)
+                        res.say(prompt).shouldEndSession(false).send();
+                    }
+                }
+                catch(err) {
+                    console.log("error in calling loadUserInfo function");
+                    console.log(err);
+                    throw err;
+                    return false;
+                }
+            })
+
+            return false;
+        }
+        catch(err) {
+            console.log("error: launchRequestHandler");
+            console.log(err);
+            throw err;
+            return false;
+        }
+    };
+
+}
+>>>>>>> 1e8cf5e4beb58d2332ff296348e37138dfeb38bb
+
+catch(err) { 
+    console.log("error handling: lauchRequest()");
+    throw err;
+}
