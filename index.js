@@ -1,5 +1,4 @@
 var alexa = require('alexa-app');
-var AWS = require('aws-sdk');
 var launchRequest = require('./launchRequest');
 var yesIntent = require('./yesIntent');
 var noIntent = require('./noIntent');
@@ -8,7 +7,7 @@ var stopIntent = require('./stopIntent');
 var helpIntent = require('./helpIntent');
 
 //allow this module to be reloaded by hotswap when changed
-module.change_code = 1;
+//module.change_code = 1;
 
 //define an alexa-app
 app = new alexa.app('commute');

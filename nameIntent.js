@@ -1,23 +1,22 @@
 'use strict';
 var commute_info = require('./commute_info');
 
-try {
+// nameIntent
+exports.nameIntentHandler = function(req,res) {
 
-    // nameIntent
-    exports.nameIntentHandler = function(req,res) {
+    console.log("nameIntent()");
 
-        console.log("nameIntent()");
+    if(!req.session("previousState")){
+        console.log("NameIntent() - no state found");
+        res.shouldEndSession(false);
+        return true;
+    }
+    
+    switch(req.sessionAttributes.previousState) {
 
-        if(!req.session("previousState")){
-            console.log("NameIntent() - no state found");
-            res.shouldEndSession(false);
-            return true;
-        }
-        
-        switch(req.sessionAttributes.previousState) {
-
-            // intent did not trigger at start-up -> triggered at launchRequest
-            case "nameNotFound":
+        // intent did not trigger at start-up -> triggered at launchRequest
+        case "nameNotFound":
+            try{
                 res.session("previousState", "confirmName");
                 
                 //get the name 
@@ -27,9 +26,8 @@ try {
 
                 //save the current user
                 res.session("crtUser", caseName);
-
+                //confirm user name
                 var prompt = "Your name is " + caseName + ". Correct?";
-                console.log("Your name is " + caseName + ". Correct?");
                 res.say(prompt).shouldEndSession(false);
                 
                 //get the car|bus option
@@ -53,15 +51,17 @@ try {
 
                 //return false immediately so alexa-app doesn't send the response
                 //and waits for the async call above to return the response
-                break;
-        }
-        
-        return true;
-    };
+            }
+            catch(err){
+                //error... trigger nameIntent again
+                res.session("previousState", "nameNotFound");
+                //list registered names
+                var prompt = "Sorry, for whom would you like to know the commute time? Say, my name is:" ;
+                res.say(prompt).shouldEndSession(false);               
+            }
+            break;
+    }
+    
+    return true;
+};
 
-}
-
-catch(err) {
-    console.log("error handling: nameIntent()")
-    res.say("Something went terribly wrong. Please try again.").shouldEndSession(true).send();
-}
