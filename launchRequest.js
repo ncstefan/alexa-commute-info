@@ -1,20 +1,30 @@
 'use strict';
 var loadUserInfo = require('./loadUserInfo');
 var AWS = require('aws-sdk');
+var fs  = require('fs');
+var path = require('path');
 
 //credential profiles defined here: ~/.aws/credentials
 //only for debuging
 //use 'ncstefan' for production and 'dany' for troubleshooting on dany's account
-var AWS_CREDENTIALS_PROFILE = "ncstefan";
+var AWS_CREDENTIALS_PROFILE = "dany_credentials";
     //launchRequest handler
 exports.launchRequestHandler = function(req,res) {
 
     console.log("launchRequest()");
 
     res.session("previousState", "onLaunch");
-    //load serviceadmin's account credentials from the credentials profiles file
-    var credentials = new AWS.SharedIniFileCredentials({profile: AWS_CREDENTIALS_PROFILE, filename:'./credentials'});]
+    //load serviceadmin's account credentials from the config file 
+    //update the file with dany's keys for debugging
+    //Read config values from a JSON file.
+    var config = fs.readFileSync(path.resolve(__dirname, 'aws_credentials.json'), 'utf8');
+    config = JSON.parse(config);
+    console.log("Loaded credentials from file: "+ JSON.stringify(config));
+    AWS.config.credentials = new AWS.Credentials({ 
+                accessKeyId: config.accessKeyId, secretAccessKey: config.secretAccessKey, sessionToken: ''
+                            });
     console.log("AWS credentials: " + JSON.stringify(AWS.config.credentials));
+    console.log("AWS credentials.sessionKey: " + AWS.config.credentials.secretAccessKey);
 
     //assume the DynamoDB remote access role
     var params = {
@@ -23,13 +33,13 @@ exports.launchRequestHandler = function(req,res) {
         RoleArn: "arn:aws:iam::824783492825:role/RemoteDynamoDBAccess", 
         RoleSessionName: "DevDebug"
     };
-    var sts = new AWS.STS({region: 'us-east-1'})
+    var sts = new AWS.STS({region: 'us-east-1'});
     sts.assumeRole(params, function(err, data) {
         if (err){
             // an error occurred
             console.log("Error assuming role." + err, err.stack); 
             var prompt = "I'm sorry. I have trouble connecting. Please try again later?";
-            res.say(prompt).shouldEndSession(true);
+            res.say(prompt).shouldEndSession(true).send();
         }
         else{
             console.log("Assumed a new role: " + JSON.stringify(data)); 
@@ -71,5 +81,8 @@ exports.launchRequestHandler = function(req,res) {
                 }
             })
         }     
-    });    
+    }); //assumeRole()
+
+    //async intent handler
+    return false;
 }
