@@ -1,5 +1,6 @@
-# AWS credentials folder
+# AWS credentials
 credentials
+aws_credentials.json
 
 
 
