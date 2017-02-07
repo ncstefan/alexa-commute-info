@@ -2,7 +2,7 @@
 var commute_info = require('./commute_info');
 
 
-function askNameAgain(){
+function getNameList(){
     try{
         //user record not found                
         //build the list of all names
@@ -14,36 +14,24 @@ function askNameAgain(){
         }
         else {
             //multiple names/destinations
-            app.dictionary.names.forEach(function(element) {
-                if (idx == app.dictionary.names.length - 1) {
-                    namelist += " and " + element;
-                }
-                else if (idx == 0) {
-                    namelist += element;
-                    idx++;
-                }
-                else {
-                    namelist += ", " + element;
-                    idx++;
-                }
-            }); 
+            for(var i=0, len = app.dictionary.names.length; i < len; i++){
+                if (i == len - 1) 
+                    namelist += " and " + app.dictionary.names[i];
+                else if (i == 0) 
+                    namelist += app.dictionary.names[i];
+                else 
+                    namelist += ", " + app.dictionary.names[i];
+            }
         }
         //list registered names
         console.log("List of destination routes: " + namelist);
-        //state change
-        res.session("previousState", "nameNotFound");
         //prompt for name again
-        var prompt = "It seems like your name is not registered in your portal. Please choose a name listed in your portal. You added destination routes for: " + namelist + ". For whom would you like to know the commute time? Say, my name is." ;
-        return prompt;
+        return namelist;
     }
     catch(err){
         //error building list of names
         console.log("error building the name list");
-        //state change
-        res.session("previousState", "nameNotFound");
-        //prompt for name again
-        var prompt = "Sorry, I couldn't find your name. For whom would you like to know the commute time? Say, my name is." ;
-        res.say(prompt).shouldEndSession(false);
+        return namelist;
     }
 
 }
@@ -72,8 +60,17 @@ exports.yesIntentHandler = function(req,res) {
                 //state change
                 res.session("previousState", "nameNotFound");
                 //ask again prompt
-                var prompt = askNameAgain();
-                res.say(prompt).shouldEndSession(false);
+                var nameList = getNameList();
+                if(!nameList){
+                    //err reading name list - END session`
+                    var prompt = "Sorry, I have difficulties retrieving the list of registered routes. Please try again later.";
+                    res.say(prompt).shouldEndSession(true);
+                }
+                else{
+                    //ask for a name in the list
+                    var prompt = "I'm sorry I couldn't find a route for your name. Please choose a name you registered a destination route for. You added routes for: " + nameList + ". For whom would you like to know the commute time? Say, my name is:" ;
+                    res.say(prompt).shouldEndSession(false);
+                }
             }
             else {
                 //state change
@@ -98,8 +95,17 @@ exports.yesIntentHandler = function(req,res) {
             //state change
             res.session("previousState", "nameNotFound");
             //ask again prompt
-            var prompt = askNameAgain();
-            res.say(prompt).shouldEndSession(false);
+            var nameList = getNameList();
+            if(!nameList){
+                //no names registered -> send to registration portal and END session.
+                var prompt = "Sorry, I couldn't find any registered destination routes. First, you will need to register your commute destinations on the registration portal. Simply follow the instructions on the card I sent to your Alexa application.";
+                res.say(prompt).shouldEndSession(true);
+            }
+            else{
+                //list registered routes and ask for name
+                var prompt = "Please choose a name you registered a destination route for. You added routes for: " + nameList + ". For whom would you like to know the commute time? Say, my name is." ;
+                res.say(prompt).shouldEndSession(false);
+            }
             break;
     }
 

@@ -24,7 +24,6 @@ exports.launchRequestHandler = function(req,res) {
                 accessKeyId: config.accessKeyId, secretAccessKey: config.secretAccessKey, sessionToken: ''
                             });
     console.log("AWS credentials: " + JSON.stringify(AWS.config.credentials));
-    console.log("AWS credentials.sessionKey: " + AWS.config.credentials.secretAccessKey);
 
     //assume the DynamoDB remote access role
     var params = {

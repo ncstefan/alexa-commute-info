@@ -37,5 +37,5 @@ console.log("noIntent()");
             res.say(prompt).shouldEndSession(false);
     }
 
-    return false;
+    return true;
 };

@@ -34,22 +34,22 @@ exports.loadUserInfo = function(db, userID, getUserInfoCallback) {       //error
                 for (var i = 0; i < data.Item.names.L.length; i++) {
                     app.dictionary.names.push(data.Item.names.L[i].M.Name.S);
                 }
-                console.log(app.dictionary.names.indexOf(data.Item.names.L[1].M.Name.S));
-                console.log(app.dictionary.names[1]);
+                // console.log(app.dictionary.names.indexOf(data.Item.names.L[1].M.Name.S));
+                // console.log(app.dictionary.names[1]);
 
                 //populate dictionary with home address
                 app.dictionary.orig = [];
                 app.dictionary.orig.push(data.Item.alexaLocation.S);
-                console.log(app.dictionary.orig.indexOf(data.Item.alexaLocation.S));
-                console.log(app.dictionary.orig[0]);
+                // console.log(app.dictionary.orig.indexOf(data.Item.alexaLocation.S));
+                // console.log(app.dictionary.orig[0]);
 
                 //populate dictionary with destination address
                 app.dictionary.dest = [];
                 for (var i = 0; i < data.Item.names.L.length; i++) {
                     app.dictionary.dest.push(data.Item.names.L[i].M.Address.S);
                 }
-                console.log(app.dictionary.dest.indexOf(data.Item.names.L[1].M.Address.S));
-                console.log(app.dictionary.dest[1]);
+                // console.log(app.dictionary.dest.indexOf(data.Item.names.L[1].M.Address.S));
+                // console.log(app.dictionary.dest[1]);
 
                 //return success: true
                 getUserInfoCallback(null, data);

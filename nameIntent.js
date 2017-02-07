@@ -27,7 +27,7 @@ exports.nameIntentHandler = function(req,res) {
                 //save the current user
                 res.session("crtUser", caseName);
                 //confirm user name
-                var prompt = "Your name is " + caseName + ". Correct?";
+                var prompt = "You'd like to know the commute time for " + caseName + ". Correct?";
                 res.say(prompt).shouldEndSession(false);
                 
                 //get the car|bus option
