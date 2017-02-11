@@ -1,4 +1,5 @@
 'use strict';
+var loadUserInfo = require('./loadUserInfo');
 
 //noIntent
 exports.noIntentHandler = function(req,res) {
@@ -7,10 +8,13 @@ console.log("noIntent()");
 
     if(!req.session("previousState")){
         console.log("NoIntent() - no state found");
-        res.session("previousState", "nameNotRecognized");
-        var prompt = "Sorry, I did not recognize you. For whom would you like to know the commute duration?";
-        res.say(prompt).shouldEndSession(false); 
-        return true;
+        //load user session (async function)
+        loadUserInfo.loadUserSession(req.userId, res, function(err, data){
+            if(err){}
+            else{}
+        }); //end - loadUserSession()        
+        //async call -> should return false
+        return false;
     }
 
     switch(req.sessionAttributes.previousState) {

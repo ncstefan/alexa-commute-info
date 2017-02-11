@@ -1,5 +1,6 @@
 'use strict';
 var commute_info = require('./commute_info');
+var loadUserInfo = require('./loadUserInfo');
 
 
 function getNameList(){
@@ -43,10 +44,13 @@ exports.yesIntentHandler = function(req,res) {
 
     if(!req.session("previousState")){
         console.log("YesIntent() - no state found");        
-        res.session("previousState", "nameNotRecognized");
-        var prompt = "Sorry, I did not recognize you. For whom would you like to know the commute duration?";
-        res.say(prompt).shouldEndSession(false); 
-        return true;
+        //load user session (async function)
+        loadUserInfo.loadUserSession(req.userId, res, function(err, data){
+            if(err){}
+            else{}
+        }); //end - loadUserSession()        
+        //async call -> should return false
+        return false;
     }
 
     switch(req.sessionAttributes.previousState) {
@@ -82,7 +86,7 @@ exports.yesIntentHandler = function(req,res) {
                         res.say("I'm sorry "+ crtName + ". I have difficulties retrieving the commute time for your route. Please try again later.");
                         res.shouldEndSession(true).send();
                     }
-                    res.say("Hello " + crtName + "! Your commute by car is: " + String(Math.round(duration/60)) + " minutes.");
+                    res.say(crtName + ", your commute by car is: " + String(Math.round(duration/60)) + " minutes.");
                     res.shouldEndSession(true).send();
                 });
                 //return false immediately so alexa-app doesn't send the response
