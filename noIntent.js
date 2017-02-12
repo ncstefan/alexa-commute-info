@@ -37,7 +37,7 @@ console.log("noIntent()");
             res.session("previousState", "nameNotFound");
             console.log("noIntent(): nameNotFound");
 
-            var prompt = "Sorry, I might have not understood your name correctly. Please repeat. Say, my name is:";
+            var prompt = "Sorry, I did not understand your name correctly. Please repeat. Say, my name is:";
             res.say(prompt).shouldEndSession(false);
     }
 
