@@ -1,0 +1,36 @@
+=====================
+Testing instructions
+=====================
+On first use, the application sends and card with registration instructions. 
+During registration, the home address along with a list of routes for each household needs to be added here:
+
+http://alexacommuteinforeg.us-east-1.elasticbeanstalk.com/
+
+Each route is associated with a person's name. 
+The app will load the user record based on the userId and calculate the traffic duration for the requested (route) name.
+
+
+=======================
+Short skill description
+=======================
+Ask Alexa for the duration of your commute in real time. 
+Say: Alexa, ask commute.
+
+=======================
+Full skill description
+=======================
+
+The first time you invoke the skill, Alexa will ask you to register your commute routes on the registration portal and will send you a card with instructions. 
+
+Once your routes registered, you can ask Alexa for the live traffic duration to any destination linked with a name of a person in your household.
+
+To change the information regarding your commute address(es), go to the portal and re-register by providing your new commute information.
+
+===============
+Privacy Policy
+===============
+The skill collects the following private information for the sole purpose of providing you with an accurate estimate of the commute duration:
+1. Your home address
+2. The destination address(es) of your commute route(s).
+
+Commute Info Service for Alexa does not share or sell any names, addresses, or anything that is typed into the skill. No information is ever disclosed to any third party outside of the Commute Info Service. 
