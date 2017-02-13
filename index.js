@@ -94,4 +94,11 @@ app.error = function(exception, request, response) {
     response.say("Sorry, something bad happened. Please try again.").send();
 };
 
+app.pre = function(request, response, type) {
+  if (request.applicationId != "amzn1.ask.skill.080952e4-62cc-4e91-86df-0bb7a742cc05") {
+    // fail ungracefully 
+    response.fail("Invalid applicationId");
+  }
+};
+
 module.exports = app;
