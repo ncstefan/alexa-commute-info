@@ -7,9 +7,17 @@ exports.confirmName = function (name, res){
     try{
         res.session("previousState", "confirmName");
         
-        var caseName = name.charAt(0).toUpperCase() + name.substr(1).toLowerCase();
+        //upper case first (and) last name
+        var names = name.split(" ");
+        var caseName = "";
+        names.forEach(function(element) {
+            caseName += element.charAt(0).toUpperCase() + element.substr(1).toLowerCase() + " ";
+        }, this);
+        caseName =  caseName.trim();
+
         //save the current user
         res.session("crtUser", caseName);
+        console.log("Confirming name: " + caseName);
         //confirm user name
         return "You'd like to know the commute time for " + caseName + ". Correct?";
     }
@@ -73,13 +81,23 @@ exports.loadUserInfo = function(userID, getUserInfoCallback) {       //error han
                 }
             }
             db.getItem(params, function(err, data) {
-                if ((err == undefined || err == null) && data.Item == undefined) {
-                    console.log("error in loading user information");
-                    getUserInfoCallback(null, null);
-                }
-                else if(data == null){
-                    console.log("user not found in DB: " + err);
-                    getUserInfoCallback(err, null);
+                // if ((err == undefined || err == null) && data.Item == undefined) {
+                //     console.log("error in loading user information");
+                //     getUserInfoCallback(null, null);
+                // }
+                // else if(data == null){
+                //     console.log("user not found in DB: " + err);
+                //     getUserInfoCallback(err, null);
+                // }
+                if( data == null ){
+                    if( err != null ){
+                        console.log('error in loading user information');
+                        getUserInfoCallback(err, null);
+                    }
+                    else{
+                        console.log('user not found');
+                        getUserInfoCallback(new Error('No user found!'), null);
+                    }
                 }
                 else {            
                     try{
@@ -90,7 +108,7 @@ exports.loadUserInfo = function(userID, getUserInfoCallback) {       //error han
                         //populate dictionary with names
                         app.dictionary.names = [];
                         for (var i = 0; i < data.Item.names.L.length; i++) {
-                            app.dictionary.names.push(data.Item.names.L[i].M.Name.S);
+                            app.dictionary.names.push(data.Item.names.L[i].M.Name.S.toLowerCase());
                         }
                         // console.log(app.dictionary.names.indexOf(data.Item.names.L[1].M.Name.S));
                         // console.log(app.dictionary.names[1]);
@@ -130,14 +148,14 @@ exports.loadUserSession = function(userId, res, userSessionCallback){
         if(err) {
             //user record not found
             res.session("previousState", "userNotFound");
-            var prompt = "We haven't met before. Welcome to the Commute Info. First, you will need to register your Alexa location and the commute destinations on the registration portal. Simply follow the instructions on the card I just sent to your Alexa application.";
+            var prompt = "We haven't met before. Welcome to the Daily Commute. First, you will need to register your Alexa location and the commute destinations on the registration portal. Simply follow the instructions on the card I just sent to your Alexa application.";
             res.say(prompt).shouldEndSession(true).send();
 
             //send card
             res.card({
                 type: "Standard",
-                title: "Here is your userID", // this is not required for type Simple
-                text: "Copy this:\n" + userId + "\nVisit the registration portal here:\n" + "http://alexacommuteinforeg.us-east-1.elasticbeanstalk.com" + "\nFollow these steps:\n1. Copy and paste your userID into the portal to have access to our services\n2. Provide the names of everyone in your household along with their home address and their destination address\n3. Now you can start using our services"
+                title: "Welcome to Commute Info Service!", // this is not required for type Simple
+                text: "Your userID is :\n" + userId + "\nTo register, visit the registration portal here:\n" + "http://alexacommuteinforeg.us-east-1.elasticbeanstalk.com" + "\nFollow these steps:\n1. Copy and paste your userID into the portal to have access to our services\n2. Provide the names of everyone in your household along with their home address and their destination address\n3. Now you can start using our services"
             });
             userSessionCallback(err,null);
         }

@@ -168,7 +168,7 @@ exports.handler = function( event, context ) {
         console.log("event.session.application.applicationId=" + event.session.application.applicationId);
 
         if (event.request.type === "LaunchRequest") {
-           output("Commute Info started. For who would you like to know the commute time?", context, false);
+           output("Daily Commute started. For who would you like to know the commute time?", context, false);
             
         } 
         

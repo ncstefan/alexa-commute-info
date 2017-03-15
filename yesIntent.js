@@ -40,9 +40,7 @@ function getNameList(){
 //yesIntent
 exports.yesIntentHandler = function(req,res) {
 
-    console.log("yesIntent()");
-
-    if(!req.session("previousState")){
+    if( typeof req.sessionAttributes == "undefined" ){
         console.log("YesIntent() - no state found");        
         //load user session (async function)
         loadUserInfo.loadUserSession(req.userId, res, function(err, data){
@@ -53,9 +51,10 @@ exports.yesIntentHandler = function(req,res) {
         return false;
     }
 
+    console.log("yesIntent()");
     switch(req.sessionAttributes.previousState) {
         case "confirmName":
-            var crtName = req.sessionAttributes["crtUser"];
+            var crtName = (req.sessionAttributes["crtUser"]).toLowerCase();
             console.log("Processing yesIntent() for: " + crtName + ".");
             console.log("Registered names: " + app.dictionary);
 
@@ -83,7 +82,7 @@ exports.yesIntentHandler = function(req,res) {
                 console.log("User found: getting live traffic info");
                 commute_info.getLiveTraffic(crtName, function(err, duration) {
                     if(err){
-                        res.say("I'm sorry "+ crtName + ". I have difficulties retrieving the commute time for your route. Please try again later.");
+                        res.say("I'm sorry "+ crtName + ". I have difficulties retrieving the commute time for your route. Please make sure you registered a valid address for your Alexa device location and your commute destinations.");
                         res.shouldEndSession(true).send();
                     }
                     res.say(crtName + ", your commute by car is: " + String(Math.round(duration/60)) + " minutes.");

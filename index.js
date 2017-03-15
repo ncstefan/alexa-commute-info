@@ -26,8 +26,10 @@ app.intent(
     {
         "slots": {"Name": "AMAZON.Person"},
         "utterances": [
+            "to give me the commute time for {-|Name}",
             "{the|my|} name is {-|Name}",
             "name is {-|Name}",
+            "for {-|Name}",
             "{-|Name}"
         ]
     },
@@ -40,7 +42,7 @@ app.intent(
     {
         "slots": {},
         "utterances": [
-            "{yes|correct|yup|sure}"
+            "{yes|correct|yup|sure|absolutely}"
         ]
     },
     yesIntent.yesIntentHandler
@@ -95,10 +97,10 @@ app.error = function(exception, request, response) {
 };
 
 app.pre = function(request, response, type) {
-  if (request.applicationId != "amzn1.ask.skill.080952e4-62cc-4e91-86df-0bb7a742cc05") {
-    // fail ungracefully 
-    response.fail("Invalid applicationId");
-  }
+//   if (request.applicationId != "amzn1.ask.skill.080952e4-62cc-4e91-86df-0bb7a742cc05") {
+//     // fail ungracefully 
+//     response.fail("Invalid applicationId");
+//   }
 };
 
 module.exports = app;
