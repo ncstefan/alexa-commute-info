@@ -3,6 +3,10 @@ var AWS = require('aws-sdk');
 var fs  = require('fs');
 var path = require('path');
 
+function validateUserID(userID){
+    return userID.startsWith("amzn1.ask.account.")?userID:"amzn1.ask.account."+userID;
+}
+
 exports.confirmName = function (name, res){
     try{
         res.session("previousState", "confirmName");
@@ -76,7 +80,7 @@ exports.loadUserInfo = function(userID, getUserInfoCallback) {       //error han
                 TableName : "alexacommute_sign_up",
                 Key : {
                     alxID : {
-                        'S' : userID
+                        'S' : validateUserID(userID)
                     }
                 }
             }
@@ -89,51 +93,48 @@ exports.loadUserInfo = function(userID, getUserInfoCallback) {       //error han
                 //     console.log("user not found in DB: " + err);
                 //     getUserInfoCallback(err, null);
                 // }
-                if( data == null ){
-                    if( err != null ){
-                        console.log('error in loading user information');
-                        getUserInfoCallback(err, null);
-                    }
-                    else{
+                if( err ){
+                    //error reading DB record
+                    console.log('error in loading user information');
+                    getUserInfoCallback(err, null);
+                }
+                else{
+                    //read
+                    if( typeof data.Item === "undefined" ){
+                        //user not found
                         console.log('user not found');
                         getUserInfoCallback(new Error('No user found!'), null);
                     }
-                }
-                else {            
-                    try{
-                        console.log("success in loading user information");
-                        console.log(JSON.stringify(data));
-                        //console.log(data.Item.names.L[0]);
-                        
-                        //populate dictionary with names
-                        app.dictionary.names = [];
-                        for (var i = 0; i < data.Item.names.L.length; i++) {
-                            app.dictionary.names.push(data.Item.names.L[i].M.Name.S.toLowerCase());
+                    else{
+                        //user found
+                        try{
+                            console.log("success in loading user information");
+                            console.log(JSON.stringify(data));
+                            
+                            //populate dictionary with names
+                            app.dictionary.names = [];
+                            for (var i = 0; i < data.Item.names.L.length; i++) {
+                                app.dictionary.names.push(data.Item.names.L[i].M.Name.S.toLowerCase());
+                            }
+
+                            //populate dictionary with home address
+                            app.dictionary.orig = [];
+                            app.dictionary.orig.push(data.Item.alexaLocation.S);
+
+                            //populate dictionary with destination address
+                            app.dictionary.dest = [];
+                            for (var i = 0; i < data.Item.names.L.length; i++) {
+                                app.dictionary.dest.push(data.Item.names.L[i].M.Address.S);
+                            }
+
+                            //return success: true
+                            getUserInfoCallback(null, data);
                         }
-                        // console.log(app.dictionary.names.indexOf(data.Item.names.L[1].M.Name.S));
-                        // console.log(app.dictionary.names[1]);
-
-                        //populate dictionary with home address
-                        app.dictionary.orig = [];
-                        app.dictionary.orig.push(data.Item.alexaLocation.S);
-                        // console.log(app.dictionary.orig.indexOf(data.Item.alexaLocation.S));
-                        // console.log(app.dictionary.orig[0]);
-
-                        //populate dictionary with destination address
-                        app.dictionary.dest = [];
-                        for (var i = 0; i < data.Item.names.L.length; i++) {
-                            app.dictionary.dest.push(data.Item.names.L[i].M.Address.S);
+                        catch(err){
+                            //pass error to consumer
+                            console.log("error in getItem() callback: " + err.message); 
+                            getUserInfoCallback(err, null);
                         }
-                        // console.log(app.dictionary.dest.indexOf(data.Item.names.L[1].M.Address.S));
-                        // console.log(app.dictionary.dest[1]);
-
-                        //return success: true
-                        getUserInfoCallback(null, data);
-                    }
-                    catch(err){
-                        //pass error to consumer
-                        console.log("Error in getItem() callback"); 
-                        getUserInfoCallback(err, null);
                     }
                 }
             }); //end getITem()

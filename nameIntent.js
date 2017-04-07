@@ -6,7 +6,7 @@ var loadUserInfo = require('./loadUserInfo');
 // nameIntent
 exports.nameIntentHandler = function(req,res) {
 
-    if( typeof req.sessionAttributes == "undefined" ){
+    if( typeof req.sessionAttributes === "undefined" || typeof req.sessionAttributes.previousState === "undefined" ){
         //nameIntent called directly
         console.log("NameIntent() - no state found");
         //call the loadUserInfo function 

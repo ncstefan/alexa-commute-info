@@ -18,7 +18,7 @@ exports.launchRequestHandler = function(req,res) {
             //user record not found
             res.session("previousState", "userNotFound");
             var prompt = "We haven't met before. Welcome to the Daily Commute. First, you will need to register your Alexa location and the commute destinations on the registration portal. Simply follow the instructions on the card I just sent to your Alexa application.";
-            res.say(prompt).shouldEndSession(false).send();
+            res.say(prompt).shouldEndSession(true).send();
 
             //send card
             res.card({
