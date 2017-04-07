@@ -26,6 +26,8 @@ app.intent(
     {
         "slots": {"Name": "AMAZON.Person"},
         "utterances": [
+            "{|what is} the {|commute} time for {-|Name}",
+            "{|what is} the commute for {-|Name}",
             "to give me the commute time for {-|Name}",
             "{the|my|} name is {-|Name}",
             "name is {-|Name}",

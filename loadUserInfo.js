@@ -3,8 +3,29 @@ var AWS = require('aws-sdk');
 var fs  = require('fs');
 var path = require('path');
 
-function validateUserID(userID){
-    return userID.startsWith("amzn1.ask.account.")?userID:"amzn1.ask.account."+userID;
+function trimUserID(userID){
+    var s = userID.split('.');
+    return s[s.length-1];
+}
+
+function updateSessionDict( data ){
+        console.log(JSON.stringify(data));
+        
+        //populate dictionary with names
+        app.dictionary.names = [];
+        for (var i = 0; i < data.Item.names.L.length; i++) {
+            app.dictionary.names.push(data.Item.names.L[i].M.Name.S.toLowerCase());
+        }
+
+        //populate dictionary with home address
+        app.dictionary.orig = [];
+        app.dictionary.orig.push(data.Item.alexaLocation.S);
+
+        //populate dictionary with destination address
+        app.dictionary.dest = [];
+        for (var i = 0; i < data.Item.names.L.length; i++) {
+            app.dictionary.dest.push(data.Item.names.L[i].M.Address.S);
+        }
 }
 
 exports.confirmName = function (name, res){
@@ -75,12 +96,11 @@ exports.loadUserInfo = function(userID, getUserInfoCallback) {       //error han
             //connect to the DB
             console.log("connecting to DB using params: " + JSON.stringify(paramsDynamoDB) );
             var db = new AWS.DynamoDB(paramsDynamoDB);
-
             var params = {
                 TableName : "alexacommute_sign_up",
                 Key : {
                     alxID : {
-                        'S' : validateUserID(userID)
+                        'S' : userID
                     }
                 }
             }
@@ -102,38 +122,63 @@ exports.loadUserInfo = function(userID, getUserInfoCallback) {       //error han
                     //read
                     if( typeof data.Item === "undefined" ){
                         //user not found
-                        console.log('user not found');
-                        getUserInfoCallback(new Error('No user found!'), null);
+                        console.log('user not found: ' +userID);
+                        //try the short version w/o prefix "amzn1.ask.account."
+                        var uid = trimUserID( userID );
+                        console.log('trying the short version of userID: ' + uid );
+                        var params = {
+                            TableName : "alexacommute_sign_up",
+                            Key : {
+                                alxID : {
+                                    'S' : uid
+                                }
+                            }
+                        }
+                        db.getItem( params, function(err, data) {                            
+                            if( err ){
+                                //error reading DB record
+                                console.log('error in loading user information - short version');
+                                getUserInfoCallback(err, null);
+                            }
+                            else{
+                                if( typeof data.Item === "undefined" ){
+                                    //user not found
+                                    console.log( 'short version not found' );
+                                    //user not found 
+                                    getUserInfoCallback( new Error('No user found!'), null );
+                                }
+                                else{  
+                                    //user found
+                                    console.log("success in loading user information - short version");
+                                    try{
+                                        
+                                        updateSessionDict( data );
+                                        //return success: true
+                                        getUserInfoCallback( null, data );
+                                    }
+                                    catch( err ){
+                                        //pass error to consumer
+                                        console.log("error in getItem() callback: " + err.message); 
+                                        getUserInfoCallback( err, null );
+                                    }
+
+                                }
+                            }
+                        });//end getItem() - for the short version of userID
                     }
                     else{
                         //user found
+                        console.log("success in loading user information");
                         try{
-                            console.log("success in loading user information");
-                            console.log(JSON.stringify(data));
                             
-                            //populate dictionary with names
-                            app.dictionary.names = [];
-                            for (var i = 0; i < data.Item.names.L.length; i++) {
-                                app.dictionary.names.push(data.Item.names.L[i].M.Name.S.toLowerCase());
-                            }
-
-                            //populate dictionary with home address
-                            app.dictionary.orig = [];
-                            app.dictionary.orig.push(data.Item.alexaLocation.S);
-
-                            //populate dictionary with destination address
-                            app.dictionary.dest = [];
-                            for (var i = 0; i < data.Item.names.L.length; i++) {
-                                app.dictionary.dest.push(data.Item.names.L[i].M.Address.S);
-                            }
-
+                            updateSessionDict( data );
                             //return success: true
-                            getUserInfoCallback(null, data);
+                            getUserInfoCallback( null, data );
                         }
-                        catch(err){
+                        catch( err ){
                             //pass error to consumer
                             console.log("error in getItem() callback: " + err.message); 
-                            getUserInfoCallback(err, null);
+                            getUserInfoCallback( err, null );
                         }
                     }
                 }
