@@ -26,7 +26,43 @@ function setMapAPIOptions(name) {
     return options;
 }
 
-exports.getLiveTraffic = function(name, getTrafficCallback) {
+//builds the string listing the configured route names
+exports.getNameList = function (){
+    try{
+        //user record not found                
+        //build the list of all names
+        var namelist = '';
+        var idx = 0;
+        if (app.dictionary.names.length == 1) {
+            //single name/destination
+            namelist = namelist + app.dictionary.names[0];
+        }
+        else {
+            //multiple names/destinations
+            for(var i=0, len = app.dictionary.names.length; i < len; i++){
+                if (i == len - 1) 
+                    namelist += " and " + app.dictionary.names[i];
+                else if (i == 0) 
+                    namelist += app.dictionary.names[i];
+                else 
+                    namelist += ", " + app.dictionary.names[i];
+            }
+        }
+        //list registered names
+        console.log("List of destination routes: " + namelist);
+        //prompt for name again
+        return namelist;
+    }
+    catch(err){
+        //error building list of names
+        console.log("error building the name list");
+        return namelist;
+    }
+
+}
+
+//retrieves traffic information from GoogleMaps for a given route in app.dictionary
+function getLiveTraffic(name, getTrafficCallback) {
 
     console.log("getLiveTraffic()");
 
@@ -58,4 +94,48 @@ exports.getLiveTraffic = function(name, getTrafficCallback) {
     });
 
   req.end();
+}
+
+//verifies the route and retrieves the traffic information
+exports.getLiveTrafficForRoute = function( req, routeName, res ){
+        var crtName = routeName.toLowerCase();
+        console.log("getLiveTrafficForRoute() for: " + routeName + ".");
+        console.log("Registered names: " + app.dictionary);
+
+        //ask again if name not found in the list
+        if (app.dictionary.names.indexOf(crtName) == -1) {
+            //state change
+            res.session("previousState", "nameNotFound");
+            //ask again prompt
+            var nameList = this.getNameList();
+            if(!nameList){
+                //err reading name list - END session
+                var prompt = "Sorry, I have difficulties retrieving the list of registered routes. Please try again later.";
+                res.say(prompt).shouldEndSession(true).send();
+            }
+            else{
+                //ask for a name in the list
+                var prompt = "I'm sorry I couldn't find a route for your name. Please choose a name you registered a destination route for. You added routes for: " + nameList + ". For whom would you like to know the commute time? Say, my name is:" ;
+                res.say(prompt).shouldEndSession(false).send();
+            }
+            //return true so alexa-app sends the response right away.
+            return true;
+        }
+        else {
+            //state change
+            res.session("previousState", "correctName");
+            //retrieve commute duration for <name>
+            console.log("User found: getting live traffic info");
+            getLiveTraffic(crtName, function(err, duration) {
+                if(err){
+                    res.say( "I'm sorry "+ routeName + ". I have difficulties retrieving the commute time for your route. Please make sure you registered a valid address for your Alexa device location and your commute destinations.");
+                    res.shouldEndSession(true).send();
+                }
+                res.say( routeName + ", your commute by car is: " + String(Math.round(duration/60)) + " minutes.");
+                res.shouldEndSession(true).send();
+            });
+            //return false immediately so alexa-app doesn't send the response
+            //and waits for the async call above to return the response
+            return false;
+        }
 }

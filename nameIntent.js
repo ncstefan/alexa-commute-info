@@ -21,15 +21,17 @@ exports.nameIntentHandler = function(req,res) {
                 res.card({
                     type: "Standard",
                     title: "Welcome to Commute Info Service!", // this is not required for type Simple
-                    text: "Your userID is :\n" + req.userId + "\nTo register, visit the registration portal here:\n" + "http://alexacommuteinforeg.us-east-1.elasticbeanstalk.com" + "\nFollow these steps:\n1. Copy and paste your userID into the portal to have access to our services\n2. Provide the names of everyone in your household along with their home address and their destination address\n3. Now you can start using our services"
+                    text: "Your userID is :\n" + req.userId + "\nTo register, visit the registration portal here:\n" + "http://alexacommuteinforeg.us-east-1.elasticbeanstalk.com" + "\nFollow these steps:\n1. Copy and paste your userID into the portal to have access to our service.\n2. Provide the names of everyone in your household along with their home address and their destination address.\n3. Now you can start using Daily Commute. To find out your commute time say:\n\nAlexa, ask Daily Commute what is the (commute) time for Jonh.\nAlexa, ask Daily Commute the commute (time) for John Smith."
                 });
             }
             else{
                 //user record found
                 res.session("previousState", "userFound");
                 console.log("Found userID in DB: "+ JSON.stringify(data));
-                var prompt = loadUserInfo.confirmName(req.slot('Name'), res);
-                res.say(prompt).shouldEndSession(false).send();
+                //retrieve route name and skip confirmation
+                var name = loadUserInfo.confirmName( req.slot('Name'), false, res );
+                //get traffic for selected route
+                return commute_info.getLiveTrafficForRoute( req, name.toLowerCase(), res);
             }
         }); //end loadUserInfo()
         
@@ -43,7 +45,8 @@ exports.nameIntentHandler = function(req,res) {
 
         // intent did not trigger at start-up -> triggered at launchRequest
         case "nameNotFound":
-            var prompt = loadUserInfo.confirmName(req.slot('Name'), res);
+            //retrieve route name and ask for confirmation
+            var prompt = loadUserInfo.confirmName(req.slot('Name'), true, res);
             res.say(prompt).shouldEndSession(false);
 
             //get the car|bus option

@@ -3,6 +3,7 @@ var AWS = require('aws-sdk');
 var fs  = require('fs');
 var path = require('path');
 
+
 function trimUserID(userID){
     var s = userID.split('.');
     return s[s.length-1];
@@ -28,7 +29,7 @@ function updateSessionDict( data ){
         }
 }
 
-exports.confirmName = function (name, res){
+exports.confirmName = function (name, prompt, res){
     try{
         res.session("previousState", "confirmName");
         
@@ -42,19 +43,24 @@ exports.confirmName = function (name, res){
 
         //save the current user
         res.session("crtUser", caseName);
-        console.log("Confirming name: " + caseName);
-        //confirm user name
-        return "You'd like to know the commute time for " + caseName + ". Correct?";
+        if( prompt ){
+            //confirm user name
+            console.log("Confirming name: " + caseName);
+            return "You'd like to know the commute time for " + caseName + ". Correct?";
+        }
+        return caseName;
     }
     catch(err){
         //error... trigger nameIntent again
         res.session("previousState", "nameNotFound");
-        //list registered names
-        return "Sorry, for whom would you like to know the commute time? Say, my name is:" ;
+        if( prompt )
+            return "Sorry, for whom would you like to know the commute time? Say, my name is:" ;
+        return "";
     }
 }
 
-exports.loadUserInfo = function(userID, getUserInfoCallback) {       //error handling userID var
+exports.loadUserInfo = function(userID, getUserInfoCallback) {       
+
     console.log("loading user data for:" + userID);
 
    //load serviceadmin's account credentials from the config file 
