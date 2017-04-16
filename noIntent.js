@@ -38,6 +38,12 @@ exports.noIntentHandler = function(req,res) {
 
             var prompt = "Sorry, I did not understand your name correctly. Please repeat. Say, my name is:";
             res.say(prompt).shouldEndSession(false);
+            break;
+
+        case "correctName":
+            //does not want the reverse route
+            res.say("Ok, bye now.").shouldEndSession(true);
+            break;
     }
 
     return true;

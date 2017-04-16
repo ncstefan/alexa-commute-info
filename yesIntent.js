@@ -19,10 +19,16 @@ exports.yesIntentHandler = function(req,res) {
 
     console.log("yesIntent()");
     switch(req.sessionAttributes.previousState) {
-        
+
+        case "correctName":
+            //also wants the reverse route (direction already reversed)
+            return commute_info.getLiveTrafficForRoute( req, req.sessionAttributes["crtUser"], req.sessionAttributes["direction"], res );
+            break;
+            
+     
         case "confirmName":
             //get live traffic for the confirmed user and set session to "correctName" or "nameNotFound"
-            return commute_info.getLiveTrafficForRoute( req, req.sessionAttributes["crtUser"], res );
+            return commute_info.getLiveTrafficForRoute( req, req.sessionAttributes["crtUser"], req.sessionAttributes["direction"], res );
             break;
 
         case "userFound":
