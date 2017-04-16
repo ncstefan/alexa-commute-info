@@ -24,11 +24,14 @@ app.launch(launchRequest.launchRequestHandler);
 app.intent(
     'NameIntent', 
     {
-        "slots": {"Name": "AMAZON.Person"},
+        "slots": {"Name": "AMAZON.Person","Direction": "directionType"},
         "utterances": [
+            "{|what is} the {-|Direction} {|commute} time for {-|Name}",
             "{|what is} the {|commute} time for {-|Name}",
             "{|what is} the commute for {-|Name}",
+            "{|what is} the {-|Direction} commute for {-|Name}",
             "to give me the commute time for {-|Name}",
+            "to give me the {-|Direction} commute time for {-|Name}",
             "{the|my|} name is {-|Name}",
             "name is {-|Name}",
             "for {-|Name}",

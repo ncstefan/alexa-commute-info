@@ -9,6 +9,7 @@ exports.nameIntentHandler = function(req,res) {
     if( typeof req.sessionAttributes === "undefined" || typeof req.sessionAttributes.previousState === "undefined" ){
         //nameIntent called directly
         console.log("NameIntent() - no state found");
+        console.log("NameIntent() - req: " + JSON.stringify(req));
         //call the loadUserInfo function 
         loadUserInfo.loadUserInfo(req.userId, function(err, data) {
             if(err) {
@@ -28,10 +29,12 @@ exports.nameIntentHandler = function(req,res) {
                 //user record found
                 res.session("previousState", "userFound");
                 console.log("Found userID in DB: "+ JSON.stringify(data));
+                var routeDirection = "direct";
+                typeof req.slot('Direction') === "undefined" ? routeDirection = "direct": routeDirection = req.slot('Direction');
                 //retrieve route name and skip confirmation
-                var name = loadUserInfo.confirmName( req.slot('Name'), false, res );
+                var name = loadUserInfo.confirmNameAndDirection( req.slot('Name'), routeDirection, false, res );
                 //get traffic for selected route
-                return commute_info.getLiveTrafficForRoute( req, name.toLowerCase(), res);
+                return commute_info.getLiveTrafficForRoute( req, name.toLowerCase(), routeDirection, res);
             }
         }); //end loadUserInfo()
         
@@ -45,8 +48,19 @@ exports.nameIntentHandler = function(req,res) {
 
         // intent did not trigger at start-up -> triggered at launchRequest
         case "nameNotFound":
+            //retrieve route direction
+            var routeDirection = "direct";
+            if( typeof req.sessionAttributes.direction === 'undefined' ){
+                //get direction from slot and save to session
+                typeof req.slot('Direction') === "undefined" ? routeDirection = "direct": routeDirection = req.slot('Direction');
+                res.session( "direction", routeDirection );
+            }
+            else{
+                //remember direction from session
+                routeDirection = req.sessionAttributes.direction;
+            }
             //retrieve route name and ask for confirmation
-            var prompt = loadUserInfo.confirmName(req.slot('Name'), true, res);
+            var prompt = loadUserInfo.confirmNameAndDirection(req.slot('Name'), routeDirection, true, res);
             res.say(prompt).shouldEndSession(false);
 
             //get the car|bus option
