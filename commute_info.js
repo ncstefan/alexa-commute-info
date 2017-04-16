@@ -1,7 +1,8 @@
 'use strict';
 var https = require('https');
+var userInfo = require('./loadUserInfo');
 
-function setMapAPIOptions(name) {
+function setMapAPIOptions(name, routeDirection) {
 
     var options = {
         host: 'maps.googleapis.com',
@@ -16,12 +17,20 @@ function setMapAPIOptions(name) {
     var orig = app.dictionary.orig[0].replace(/ /g, "+");
     var dest = app.dictionary.dest[app.dictionary.names.indexOf(name)].replace(/ /g, "+");
     console.log(orig);
+    console.log( routeDirection );
     console.log(dest);
     
-    //if(opt == 'car')
-        options.path = '/maps/api/distancematrix/json?origins=' + orig + '&destinations=' + dest + '&mode=driving&departure_time=now&key=AIzaSyCmZYBGNZw_Tkej-NwnCoEnzTwCy1lr4sg'
-    // else
-    //     options.path = '/maps/api/directions/json?origin=' + orig + '&destination=' + dest + '&mode=transit&key=AIzaSyCmZYBGNZw_Tkej-NwnCoEnzTwCy1lr4sg'    //@@@ no mstter what it's by bus
+    if( routeDirection == "direct" ){
+        //direct route
+        //if(opt == 'car')
+            options.path = '/maps/api/distancematrix/json?origins=' + orig + '&destinations=' + dest + '&mode=driving&departure_time=now&key=AIzaSyCmZYBGNZw_Tkej-NwnCoEnzTwCy1lr4sg'
+        // else
+        //     options.path = '/maps/api/directions/json?origin=' + orig + '&destination=' + dest + '&mode=transit&key=AIzaSyCmZYBGNZw_Tkej-NwnCoEnzTwCy1lr4sg'    //@@@ no mstter what it's by bus
+    }
+    else{
+        //return route
+        options.path = '/maps/api/distancematrix/json?origins=' + dest + '&destinations=' + orig + '&mode=driving&departure_time=now&key=AIzaSyCmZYBGNZw_Tkej-NwnCoEnzTwCy1lr4sg'        
+    }
 
     return options;
 }
@@ -62,12 +71,12 @@ exports.getNameList = function (){
 }
 
 //retrieves traffic information from GoogleMaps for a given route in app.dictionary
-function getLiveTraffic(name, getTrafficCallback) {
+function getLiveTraffic(name, routeDirection, getTrafficCallback) {
 
     console.log("getLiveTraffic()");
 
     // Get route information
-    var req = https.request(setMapAPIOptions(name), function(res) {
+    var req = https.request(setMapAPIOptions(name, routeDirection), function(res) {
         var str = '';
 
         res.on('data', function(chunk) {
@@ -97,10 +106,10 @@ function getLiveTraffic(name, getTrafficCallback) {
 }
 
 //verifies the route and retrieves the traffic information
-exports.getLiveTrafficForRoute = function( req, routeName, res ){
+exports.getLiveTrafficForRoute = function( req, routeName, routeDirection, res ){
         var crtName = routeName.toLowerCase();
         console.log("getLiveTrafficForRoute() for: " + routeName + ".");
-        console.log("Registered names: " + app.dictionary);
+        console.log("Registered names: " + JSON.stringify(app.dictionary));
 
         //ask again if name not found in the list
         if (app.dictionary.names.indexOf(crtName) == -1) {
@@ -126,13 +135,28 @@ exports.getLiveTrafficForRoute = function( req, routeName, res ){
             res.session("previousState", "correctName");
             //retrieve commute duration for <name>
             console.log("User found: getting live traffic info");
-            getLiveTraffic(crtName, function(err, duration) {
+            getLiveTraffic(crtName, routeDirection, function(err, duration) {
                 if(err){
                     res.say( "I'm sorry "+ routeName + ". I have difficulties retrieving the commute time for your route. Please make sure you registered a valid address for your Alexa device location and your commute destinations.");
                     res.shouldEndSession(true).send();
                 }
-                res.say( routeName + ", your commute by car is: " + String(Math.round(duration/60)) + " minutes.");
-                res.shouldEndSession(true).send();
+                if( typeof req.sessionAttributes === 'undefined' || typeof req.sessionAttributes.reverse === 'undefined' ){
+                    //continue with the reverse route
+                    res.say( routeName + ", your " + routeDirection + " commute by car is: " + String(Math.round(duration/60)) + " minutes. Would you like the reverse route time?");
+                    //reverse direction
+                    routeDirection == "direct" ? res.session("direction", "return") : res.session("direction", "direct");
+                    res.session( "reverse", true );
+                    res.shouldEndSession(false).send();
+                    //log usage data
+                    userInfo.logUserUsage( req.userId, routeName, String(Math.round(duration/60)), routeDirection);
+                }
+                else{
+                    //reverse route done - end session
+                    res.say( "Your " + routeDirection + " commute by car is: " + String(Math.round(duration/60)) + " minutes.");
+                    res.shouldEndSession(true).send();
+                    //log usage data
+                    userInfo.logUserUsage( req.userId, routeName, String(Math.round(duration/60)), routeDirection);
+                }
             });
             //return false immediately so alexa-app doesn't send the response
             //and waits for the async call above to return the response

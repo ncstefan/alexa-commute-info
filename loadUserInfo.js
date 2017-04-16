@@ -10,7 +10,7 @@ function trimUserID(userID){
 }
 
 function updateSessionDict( data ){
-        console.log(JSON.stringify(data));
+        //console.log(JSON.stringify(data));
         
         //populate dictionary with names
         app.dictionary.names = [];
@@ -29,7 +29,7 @@ function updateSessionDict( data ){
         }
 }
 
-exports.confirmName = function (name, prompt, res){
+exports.confirmNameAndDirection = function (name, direction, prompt, res){
     try{
         res.session("previousState", "confirmName");
         
@@ -41,27 +41,29 @@ exports.confirmName = function (name, prompt, res){
         }, this);
         caseName =  caseName.trim();
 
-        //save the current user
+        //save the current user & direction
         res.session("crtUser", caseName);
+        res.session("direction", direction);
         if( prompt ){
             //confirm user name
             console.log("Confirming name: " + caseName);
-            return "You'd like to know the commute time for " + caseName + ". Correct?";
+            return "You'd like to know the " + direction + " commute time for " + caseName + ". Correct?";
         }
         return caseName;
     }
     catch(err){
         //error... trigger nameIntent again
         res.session("previousState", "nameNotFound");
+        res.session("direction", direction);
         if( prompt )
             return "Sorry, for whom would you like to know the commute time? Say, my name is:" ;
         return "";
     }
 }
 
-exports.loadUserInfo = function(userID, getUserInfoCallback) {       
+exports.loadUserInfoDebug = function(userID, getUserInfoCallback) {       
 
-    console.log("loading user data for:" + userID);
+    console.log("loading user data (Debug) for:" + userID);
 
    //load serviceadmin's account credentials from the config file 
     //update the file with dany's keys for debugging
@@ -193,6 +195,97 @@ exports.loadUserInfo = function(userID, getUserInfoCallback) {
     }); //end assumeRole()
 }
 
+exports.loadUserInfo = function(userID, getUserInfoCallback) {       
+
+    console.log("loading user data for:" + userID);
+
+    //use new role's credentials
+    var paramsDynamoDB = {
+        region: 'us-east-1'
+    };
+    //connect to the DB
+    var db = new AWS.DynamoDB(paramsDynamoDB);
+    var params = {
+        TableName : "alexacommute_sign_up",
+        Key : {
+            alxID : {
+                'S' : userID
+            }
+        }
+    }
+    db.getItem(params, function(err, data) {
+        if( err ){
+            //error reading DB record
+            console.log('error in loading user information');
+            getUserInfoCallback(err, null);
+        }
+        else{
+            //read
+            if( typeof data.Item === "undefined" ){
+                //user not found
+                console.log('user not found: ' +userID);
+                //try the short version w/o prefix "amzn1.ask.account."
+                var uid = trimUserID( userID );
+                console.log('trying the short version of userID: ' + uid );
+                var params = {
+                    TableName : "alexacommute_sign_up",
+                    Key : {
+                        alxID : {
+                            'S' : uid
+                        }
+                    }
+                }
+                db.getItem( params, function(err, data) {                            
+                    if( err ){
+                        //error reading DB record
+                        console.log('error in loading user information - short version');
+                        getUserInfoCallback(err, null);
+                    }
+                    else{
+                        if( typeof data.Item === "undefined" ){
+                            //user not found
+                            console.log( 'short version not found' );
+                            //user not found 
+                            getUserInfoCallback( new Error('No user found!'), null );
+                        }
+                        else{  
+                            //user found
+                            console.log("success in loading user information - short version");
+                            try{
+                                
+                                updateSessionDict( data );
+                                //return success: true
+                                getUserInfoCallback( null, data );
+                            }
+                            catch( err ){
+                                //pass error to consumer
+                                console.log("error in getItem() callback: " + err.message); 
+                                getUserInfoCallback( err, null );
+                            }
+
+                        }
+                    }
+                });//end getItem() - for the short version of userID
+            }
+            else{
+                //user found
+                console.log("success in loading user information");
+                try{
+                    
+                    updateSessionDict( data );
+                    //return success: true
+                    getUserInfoCallback( null, data );
+                }
+                catch( err ){
+                    //pass error to consumer
+                    console.log("error in getItem() callback: " + err.message); 
+                    getUserInfoCallback( err, null );
+                }
+            }
+        }
+    }); //end getITem()
+}
+
 //async function, Intent should return FALSE if using the function
 exports.loadUserSession = function(userId, res, userSessionCallback){
     //call the loadUserInfo function 
@@ -207,7 +300,7 @@ exports.loadUserSession = function(userId, res, userSessionCallback){
             res.card({
                 type: "Standard",
                 title: "Welcome to Commute Info Service!", // this is not required for type Simple
-                text: "Your userID is :\n" + userId + "\nTo register, visit the registration portal here:\n" + "http://alexacommuteinforeg.us-east-1.elasticbeanstalk.com" + "\nFollow these steps:\n1. Copy and paste your userID into the portal to have access to our services\n2. Provide the names of everyone in your household along with their home address and their destination address\n3. Now you can start using our services"
+                text: "Your userID is :\n" + req.userId + "\nTo register, visit the registration portal here:\n" + "http://alexacommuteinforeg.us-east-1.elasticbeanstalk.com" + "\nFollow these steps:\n1. Copy and paste your userID into the portal to have access to our service.\n2. Provide the names of everyone in your household along with their home address and their destination address.\n3. Now you can start using Daily Commute. To find out your commute time say:\n\nAlexa, ask Daily Commute what is the (commute) time for Jonh.\nAlexa, ask Daily Commute the commute (time) for John Smith."
             });
             userSessionCallback(err,null);
         }
@@ -221,4 +314,36 @@ exports.loadUserSession = function(userId, res, userSessionCallback){
             userSessionCallback(null, null);
         }
     }); //end loadUserInfo()    
+}
+
+exports.logUserUsage = function(userID, routename, duration, direction) {       
+
+    console.log("logging user usage data for:" + userID);
+
+    //use new role's credentials
+    var paramsDynamoDB = {
+        region: 'us-east-1'
+    };
+    //connect to the DB
+    var db = new AWS.DynamoDB(paramsDynamoDB);
+    var d = new Date();
+    var params = {
+        TableName : "alexacommute_usage",
+        Item: {
+            alxID: {'S': userID}, 
+            routename: {'S': routename},
+            timestamp: {'S': d.toISOString()},
+            duration: {'N': duration},
+            direction: {'S': direction}
+        }
+    };
+    
+    db.putItem(params, function(err, data) {
+        if( err ){
+            console.log('error in saving usage info');
+        }
+        else{
+            console.log('saved usage info')
+        }
+    }); //end putItem()
 }
